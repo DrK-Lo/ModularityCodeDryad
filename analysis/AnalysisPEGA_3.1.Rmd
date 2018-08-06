@@ -1,0 +1,1422 @@
+---
+title: "Analysis_PEGA_2"
+author: "Katie Lotterhos"
+date: "Jun 28 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup
+setwd("/Users/katie/Desktop/Research/1-AdaptreeData/201509_PEGA/Modularitycode/analysis")
+
+```{r}
+if(!("ash" %in% installed.packages())){install.packages("ash")}
+if(!("corrr" %in% installed.packages())){install.packages("corrr")}
+if(!("igraph" %in% installed.packages())){install.packages("igraph")}
+if(!("ggplot2" %in% installed.packages())){install.packages("ggplot2")}
+if(!("ggraph" %in% installed.packages())){install.packages("ggraph")}
+if(!("dendextend" %in% installed.packages())){install.packages("dendextend")}
+if(!("VennDiagram" %in% installed.packages())){install.packages("VennDiagram")}
+if(!("limma" %in% installed.packages())){install.packages("limma")}
+if(!("fields" %in% installed.packages())){install.packages("fields")}
+if(!("dplyr" %in% installed.packages())){install.packages("dplyr")}
+if(!("limma" %in% installed.packages())){install.packages("limma")}
+if(!("cluster" %in% installed.packages())){install.packages("cluster")}
+if(!("extrafont" %in% installed.packages())){install.packages("extrafont")}
+if(!("RColorBrewer" %in% installed.packages())){install.packages("RColorBrewer")}
+if(!("devtools" %in% installed.packages())){install.packages("devtools")}
+if(!("superheat" %in% installed.packages())){devtools::install_github("rlbarter/superheat")}
+if(!("extrafont" %in% installed.packages())){install.packages("extrafont")}
+
+if(!("limma" %in% installed.packages())){
+  source("http://www.bioconductor.org/biocLite.R")
+  biocLite("limma")
+}
+
+  library(RColorBrewer)
+  library(corrr)
+  library(igraph)
+  library(ggplot2)
+  library(ggraph)
+  library(dendextend)
+  library(superheat)
+  require(VennDiagram)
+  require(limma)
+  require(ash)
+  require(fields)
+  require(dplyr)
+  require(cluster)
+  library(plyr)
+  library(gplots)
+
+
+  library(extrafont) 
+  #font_import() 
+  loadfonts()
+      
+source("plot2Dcov.R")
+source("galaxy2.R")
+```
+
+
+### Load data
+```{r, label="load data"}
+load("../data/large_files/Pine_Alpha_AveRho_WithSuperLogical_andAncestralFlip.RData")
+
+# number tcontigs
+nlevels(factor(results_pine3$tcontig))
+# number of non-tcontigs
+nlevels(factor(results_pine3$gtcontig)) - nlevels(factor(results_pine3$tcontig))
+# number of SNPs in tcontigs
+nrow(results_pine3[!is.na(results_pine3$tcontig),])
+# total number of SNPs
+nrow(results_pine3)
+```
+
+This loads:
+
+* PE
+* results_pine3 (data frame with SNPs in rows and results in columns)
+* gtcontig_array 
+* gtcontig_array_names
+* PE_matchGWAS
+* PE_matchGEA
+
+Get incides for different groups of columns in the dataframe
+
+```{r}
+  names(results_pine3)[grep("raw_rho", names(results_pine3))]
+  names(results_pine3)[grep("raw_p", names(results_pine3))]
+  
+### Spearman's rho (not structure-corrected or "uncorrected")
+  env_cols <- grep("raw_rho", names(results_pine3))[1:22]
+  rawrho_names <- names(results_pine3)[env_cols] # raw rho columns
+  
+### P-value for Uncorrected Spearman's rho  
+  cols_raw <- grep("raw_p", names(results_pine3))[1:22]
+  rawp_names <- names(results_pine3)[cols_raw ] # raw p columns
+
+### Check to make sure they line up    
+  cbind(names(results_pine3)[env_cols],names(results_pine3)[cols_raw])
+    
+### Bayes Factor from Bayenv2    
+  bayenvBF_names <- sub("_raw_p","",names(results_pine3)[cols_raw])
+  cols_bayenvBF <- which(names(results_pine3) %in% bayenvBF_names)
+
+### Structure-correcte rho from Bayenv2      
+  bayenvrho_names <- paste(bayenvBF_names, "rhoave", sep="_")
+  cols_bayenvrho <-which(names(results_pine3) %in% bayenvrho_names)
+
+```
+
+
+## Step 1: Identify top candidate contigs from Yeaman et al. 2016 and identify top candidate SNPs within those contigs
+
+```{r,label="Top SNP's from Sam's top candidates" }
+
+### Subset entire data to top contigs  
+  superdf <- results_pine3[results_pine3$pine_super_p9 | 
+                           results_pine3$pine_super_raw_p9,]
+### Set up logical dataframe for identifying outliers     
+  is.superdf <- matrix(NA, nrow(superdf), length(cols_raw))
+  colnames(is.superdf) <- names(results_pine3)[cols_raw]
+
+
+### Identify top candidate SNPs within those contigs
+  ### Top SNPs have a significant Bonferroni-corrected P value for uncorrected Spearmans rho and a Bayes Factor from Bayenv2 > 2
+  ### This is the code that decides top outliers:
+    
+    P_cutoff <- -log10(0.05/(22*nrow(results_pine3)))
+    P_cutoff
+    
+    for (i in 1:length(cols_raw)){
+      cd <- cols_raw[i]
+      cd_bayenv <- cols_bayenvBF[i]
+      P_focal <- -log10(abs(superdf[,cd]))
+      BF_focal <- superdf[,cd_bayenv]
+      is.superdf[,i] <- P_focal>P_cutoff & BF_focal > 2
+      is.superdf[is.na(is.superdf[,i]),i] <- FALSE
+      #sum(is.na(is.superdf[,i]))
+      print( c(i,names(results_pine3)[cd], names(results_pine3)[cd_bayenv]))
+    }
+  num.var.raw.out <- rowSums(is.superdf,na.rm = TRUE)
+  
+  ### total number of SNPs in super contigs
+  nrow(superdf) 
+  
+  ### number of all Sam's super contigs
+  length(unique(superdf$gtcontig)) 
+  
+  ### number of super SNPs in super contigs
+  sum(num.var.raw.out>0) 
+    ## 1241 SNPs without BF cutoff, 801 SNPS with BF cutoff
+
+  ### number of super contigs with superSNPs (# contigs in Group 1)
+  length(unique(superdf$gtcontig[num.var.raw.out>0])) 
+    ## 133 contigs without BF cutoff, 108 contigs with BF cutoff
+  
+  
+  ### Dataframe of Group 1
+  Group1_allSuperSNPs <- superdf[num.var.raw.out>0,]
+  dim(Group1_allSuperSNPs)
+  ### Logical Group 1
+  results_pine3$Group1_logical <- results_pine3$gcontig__gcontig_pos %in% Group1_allSuperSNPs$gcontig__gcontig_pos
+  
+  ### Sanity check - number of SNPs in Group 1 the same
+  (Group1_nSNPs <- sum(results_pine3$Group1_logical))
+  
+  ### Sanity check - number of contigs in Group 1 the same
+  (Group1_ncontigs <-length(levels(factor(results_pine3$gtcontig[results_pine3$Group1_logical]))))
+  
+  G1_hist <- sort(table(results_pine3$gtcontig[results_pine3$Group1_logical]),decreasing = TRUE)
+  
+ 
+  top_contigs <- names(G1_hist)
+```
+
+
+### Compare my list to Yeaman 2016 convergence candidates
+These are genes we think are true positives because they adapt to climate in both pine and spruce.
+
+Yeaman et al. 2016 identified 47 orthologs with FDR correction
+
+```{r, label="Compare convergence candidates"}
+sy <- read.table("../data/orthologs/parallelism_genes_pine_spruce_q05.txt")
+head(sy)
+nrow(sy)
+sy_top <- unique(sy$V1)
+length(sy_top)
+length(unique(sy$V2))
+
+### Make sure all contigs in list are in my df
+  for (i in 1:length(sy_top)){
+    cd <- as.character(sy_top[i])
+    if(length(which(sy_top[i]==results_pine3$gtcontig))==0){
+      print(c(i, "missing",cd))
+    }
+  }
+  ### If nothing printed that is a good thing!
+
+### Which ones of Group 1 are super convergent outliers
+  sum(top_contigs %in% sy$V1)
+  sum(sy$V1 %in% top_contigs)
+  
+  top_contigs[which(top_contigs %in% sy$V1)]
+  ### We get the same 10 contigs with or without the BF cutoff
+```
+According to the above results, 10 of those 47 are in my list of top candidates.
+
+### Group 1 Make some comparison plots
+
+SNPs were coded for association analyses according to alphabetical order. However, we also have the ancestral SNP according to mapping our data onto the loblolly pine genome. The direction of the sign to change the SNP association to one relative to the ancestral state is given by multiplying the SNP association by the column "Ances_flipNum".
+
+Here, I am just comparing the patterns between the alphabetical coding and the ancestral coding.
+
+```{r}
+sum(results_pine3$Group1_logical)
+sum(results_pine3$Group1_logical & !is.na(results_pine3$Ances_flipNum), na.rm=TRUE)
+  # number of top candidate SNPs that we have ancestral state for
+
+names(results_pine3)[grep("MAT", names(results_pine3))]
+```
+
+
+## Co-association network analysis
+The objective of the next section is to identify groups of SNPs that show similar patterns of association across the multivariate environment.
+
+This analysis consists of several steps:
+
+1) Cluster the environmental data according to their abs(correlation) with each other.
+
+2) Cluster the SNPs according to their abs(associations) with environments, while holding the order of the environments according to the environmental clustering. Through data visualizations and toy data I've determined that the absolute value here is important, because the sign of the SNP association is arbitrary anyway.
+
+3) Identify groups of SNPs according to how they cluster together.
+
+4) Use undirected network graphs to visualize how contigs and SNPs cluster together and identify modules.
+
+5) Use galaxy plots to interpret individual SNP correlations in multiple environments relative to the ancestral state.
+
+Load the Pine environmental data and determine cluster relationships among environments
+```{r, label="Environment clusters"}
+### 
+  load("../data/PineHeatmap.Rdata")
+  # loads env_clust - this cluster object was not based on signed associations and led to some weird clustering
+    # env_clust$rowInd is the order of environments based on signed clustering
+  env_clust_old <- env_clust
+  env_clust_old$rowInd
+  # raw correlations
+    head(env_clust_old$carpet)
+  # Redo clustering based on abs()
+    cormat <- t(env_clust_old$carpet)
+    cormat <- cormat[,22:1]
+    head(cormat)
+    longnames <- data.frame(rownames(cormat),colnames(cormat))
+    #rownames(cormat) <- colnames(cormat)
+    head(cormat)
+    env_clust <- hclust(abs(dist(as.matrix(cormat))))
+    env_clust$order
+    env_clust$labels
+    env_clust$labels[env_clust$order]
+    rownames(env_clust_old$carpet)
+    rownames(t(env_clust_old$carpet))
+  # heatmap of environments
+    env_clust$labels
+    colnames(cormat)
+    cormat2 <- cormat[env_clust$order, ]
+    #colnames(cormat2)
+    cormat2 <- cormat2[, env_clust$order]
+    head(cormat2)
+    par(mar=c(4,1,1,1))
+    png("../results/dendogram_environment.png", width=12, height=9, units = "in", res=500)
+    superheat(cormat2, col.dendrogram = TRUE,#row.dendrogram=TRUE,
+              order.rows = 1:22,
+              order.cols = 1:22,#legend.height = 0.05,
+              left.label.size = 1, bottom.label.size =  0.25,
+              bottom.label.text.angle = 90)
+    dev.off()
+```
+
+
+First, take absolute value of the SNP effect sizes b/c of signed nature of alleles
+```{r, label="hierarchical clustering of associations"}
+results_pine3$gtcontig_pos <-  paste(results_pine3$gtcontig, results_pine3$pos_gcontig, sep="_")
+labs <- results_pine3$gtcontig_pos
+labs2 <- gsub("_c0_seq1",replacement = "",labs)
+labs3 <- gsub("_c1_seq1",replacement = "",labs2)
+labs4 <- gsub("_c4_seq1",replacement = "",labs3)
+results_pine3$gtcontig_pos <- labs4
+
+# Distance matrix and hierarchical cluster based on association patterns
+  snp_mat <- abs(results_pine3[results_pine3$Group1_logical, env_cols])
+  rownames(snp_mat) <- results_pine3$gtcontig_pos[results_pine3$Group1_logical]
+  head(snp_mat)
+  snp_dist <- dist(snp_mat, diag=TRUE, upper=TRUE)
+  str(snp_dist)
+  snp_order <- hclust(snp_dist)
+  head(snp_order$labels[snp_order$order])
+
+# Assign cluster membership
+  clusMember = cutree(snp_order, 4)
+  table(clusMember)
+  length(clusMember)
+  results_pine3$cluster[results_pine3$Group1_logical] <- clusMember
+    # 1 is Aridity, 2 is geography, 3 is freezing and 4 is multi
+    # for plotting want 
+      # 1 multi, 2 aridity, 3 freezing and 4 geography
+  results_pine3$groupPlot <- results_pine3$cluster
+  results_pine3$groupPlot <- mapvalues(results_pine3$groupPlot,
+                                       from=1:4,
+                                       to = c(2,4,3,1))
+  plot(results_pine3$cluster,results_pine3$groupPlot)
+  
+# Match order environments in SNPs to order of environments by their associations with each other
+  sample1 = abs(results_pine3[results_pine3$Group1_logical, env_cols])
+  colnames(sample1) <- sub("_raw_rho", "", colnames(sample1))
+  colnames(sample1)
+  #need to match this to the environmental clustering
+  dim(sample1)
+  
+  m <- match(colnames(cormat2), colnames(sample1))
+  sample <- sample1[,m]
+  colnames(sample)
+
+png("../results/dendogram_ordered.png", width=12, height=9, units = "in", res=500)
+superheat(t(sample), 
+          order.rows= 1:22,#rev(env_clust_old$rowInd),
+          order.cols = snp_order$order,
+          heat.pal = (brewer.pal(5, "Blues")), heat.na.col = "white",
+          col.dendrogram = T, row.dendrogram = TRUE,
+            left.label.size = 0.2)
+dev.off()
+
+
+### Compare pattern to structure-corrected rho
+  sample_bayenv = (results_pine3[results_pine3$Group1_logical, cols_bayenvrho])
+  colnames(sample_bayenv) <- sub("_rhoave", "", colnames(sample_bayenv))
+  dim(sample_bayenv)
+  m <- match(colnames(cormat2), colnames(sample_bayenv))
+  sample_bv2 <- sample_bayenv[,m]
+  colnames(sample_bv2)
+  
+  png("../results/dendogram_ordered_bayenv.png", width=12, height=9, units = "in", res=500)
+    superheat(t(abs(sample_bv2)), 
+            order.rows=1:22, #rev(env_clust_old$rowInd),
+            heat.pal = (brewer.pal(5, "Blues")),
+            heat.na.col = "white",
+            col.dendrogram = TRUE, row.dendrogram = TRUE,
+              left.label.size = 0.2,
+          order.cols = snp_order$order)
+  dev.off()
+```
+
+## Create Top Candidate Contig df
+Top candidate loci are broken into groups based on their hierarchical clustering for co-association network visualization.
+
+```{r, "Break top candidates into groups"}
+limit.df <- results_pine3[results_pine3$Group1_logical,]
+dim(limit.df)
+
+### Overlap among SNPs
+a<- vennCounts(cbind(limit.df$cluster==1, # aridity
+                     limit.df$cluster==2, # geography
+                     limit.df$cluster==3, # freezing
+                     limit.df$cluster==4)) # multi
+# vennDiagram(a) note that this is meaningless b/c at SNP level
+
+### Overlap among contigs
+contig.group.df <- data.frame(
+  Multi = table(limit.df$gtcontig,limit.df$cluster==4)[,2],
+  Aridity = table(limit.df$gtcontig,limit.df$cluster==1)[,2],
+  Freezing = table(limit.df$gtcontig,limit.df$cluster==3)[,2],
+  Geography = table(limit.df$gtcontig,limit.df$cluster==2)[,2]
+)
+
+# "group" is for contigs - which cluster does the contig belong to
+contig.group.df$group <- apply(contig.group.df[,1:4],1, FUN = function(x)(which(x==max(x))))
+contig.group.df$nout <- rowSums(contig.group.df[,1:4])
+
+# cluster is to correspond to SNP df
+contig.group.df$cluster <- NA
+contig.group.df$cluster[contig.group.df$group==1] <- "Multi-4"
+contig.group.df$cluster[contig.group.df$group==2] <- "Aridity-1"
+contig.group.df$cluster[contig.group.df$group==3] <- "Freezing-3"
+contig.group.df$cluster[contig.group.df$group==4] <- "Geography-2"
+
+###
+contig.group.df<- contig.group.df[order(contig.group.df$group,contig.group.df$nout, decreasing=c(FALSE, TRUE),method="radix"),]
+contig.group.df
+
+contig.group.df$gtcontig <- rownames(contig.group.df)
+
+head(contig.group.df)
+```
+
+  
+## Co-association network
+
+Functions to calculate modules based on distance matrix
+and visualize the modules within groups
+
+```{r Network functions}
+shortclust <- results_pine3$cluster[results_pine3$Group1_logical]
+source("myFunDist.R")
+
+### In contig.group.df, "group" is for clusterID and plotting order, but not equal to cluster given by the SNP
+
+MakeDistNetwork <- function(clustnum, filename, disthreshold, full_name=FALSE){
+  
+  ### Based on correlation in associations (co-association)
+  #names(results_pine3)[env_cols]
+  #multidat <- abs(results_pine3[which(results_pine3$cluster==clustnum), env_cols])
+  #str(multidat)
+  #rownames(multidat) <- results_pine3$gtcontig_pos[which(results_pine3$cluster==clustnum)]
+  #dim(multidat)
+  
+  snp_distmat_multi <- snp_distmat[shortclust ==clustnum, shortclust ==clustnum]
+  print(dim(snp_distmat_multi))
+  head(snp_distmat_multi[1:5, 1:5])
+  
+  #hist(snp_distmat_multi)
+  # This histogram is bimodal with the larger values > 0.4
+
+  d4_multi <- myFun(as.dist(snp_distmat_multi))
+  head(d4_multi)
+  #hist(d4_multi$value)
+  
+  (nedges <- nrow(d4_multi %>%
+    filter(abs(d4_multi$value) < disthreshold)))
+  
+  print(c("Number of edges:", nedges))
+  if(nedges > 30000){print("Too many edges"); break}
+  
+  
+  graph_cors <- d4_multi %>%
+    filter(value < disthreshold) %>% #filter to close distances
+    graph_from_data_frame(directed = FALSE)
+  
+    # check node names and add nodes if they are missing
+    V(graph_cors)$name
+    toadd <- !(rownames(snp_distmat_multi) %in% V(graph_cors)$name)
+    sum(toadd)
+    graph_cors2 <- add_vertices(graph_cors, nv = sum(toadd, na.rm=TRUE), name= rownames(snp_distmat_multi)[toadd])
+    V(graph_cors2)$name
+    sum(!(rownames(snp_distmat_multi) %in% V(graph_cors2)$name))
+      #should be 0 because nothing missing
+    graph_cors <- graph_cors2
+    
+    # line up names
+    (myo <- match(V(graph_cors)$name, results_pine3$gtcontig_pos))
+    
+    contigname = results_pine3$gtcontig[myo]
+    
+    
+   #cluster membership
+   mem=clusters(graph_cors)$membership
+  # number edges for each node
+   nodenumedge <- sapply(V(graph_cors)$name, function(x) length(E(graph_cors)[from(V(graph_cors)[x])]))
+   sub_df <- data.frame(gtcontig_pos=names(mem), subcluster=mem, numedge = nodenumedge, myocol=NA)
+    head(sub_df)
+   
+    SNPsperMod <- table(sub_df$subcluster)
+    which(SNPsperMod>1)
+   
+    ncol= length(which(SNPsperMod>1)) #nlevels(factor(mem))
+    
+    ### Assign colors ####
+   # Aridity
+  if(filename=="Aridity"){
+      startcol="orange"; middlecol="brown2"; endcol="darkorange4"
+      set.seed(99)
+      thiscol <- adjustcolor("#e5571b", alpha.f = 0.8)
+   }
+  if(filename=="Multi"){
+      startcol="#DAF7A6"; middlecol="darkgreen"; endcol= "#28B463";       set.seed(99)
+      thiscol <- adjustcolor(c(endcol, startcol), alpha.f =0.8)
+  }
+  if(filename=="Geography"){
+      thiscol <- adjustcolor(c("gold", "goldenrod4", "darkgoldenrod1", "#af974d", "#ffdc02",
+                   "blanchedalmond", "burlywood3", "bisque2", "#cab26a", "#ffd522",
+                   "gold2", "bisque", "burlywood1", "#dcca87", "#ecbf00",
+                   "darkgoldenrod2", "gold3", "goldenrod", "#f7e8a9", "#d2aa00",
+                   "bisque3", "goldenrod1", "burlywood2", "#ffed80", "#a78700",
+                   "#fff9ae", "#dab600", "#f8ed62", "#e9d700",  "#6d5800"), alpha.f = 0.8)
+  }
+  if(filename=="Freezing"){
+    # 9 colors  
+    thiscol <- adjustcolor(c("cornflowerblue", "cadetblue1",
+                 "cyan", "deepskyblue",
+                 "cyan3", "dodgerblue",
+                 "darkcyan", "cadetblue3",
+                "#6666ff"
+                 ), alpha.f = 0.8)
+   }
+    
+  
+  fills= rep(NA, length(SNPsperMod))
+  
+  fills[which(SNPsperMod>1)] <- thiscol 
+    
+
+  if(filename=="Aridity"){
+    fills[which(SNPsperMod==1)] <- "#f45a5a"
+  }
+  if(filename=="Freezing"){
+    fills[which(SNPsperMod==1)] <- "darkslategray1"
+  }
+  if(filename=="Geography"){
+    fills[which(SNPsperMod==1)] <- "#e5e500"
+  }
+  if(filename=="Multi"){
+    fills[which(SNPsperMod==1)] <- "green"
+  }
+  
+    plot(1:length(fills), col=fills, pch=19, cex=2,
+      main=paste(filename,"subcluster membership color"))
+
+  
+  sub_df$myocol <- sub_df$subcluster
+  
+  sub_df$myocol <- mapvalues(sub_df$myocol, from= levels(factor(sub_df$subcluster)),
+                             to = fills)
+   myocol <- sub_df$myocol
+   
+   #sub_df<-sub_df[order(sub_df$subcluster, sub_df$numedge),]
+  
+   png(file = paste("../results/NetworkDist2Hist", filename,".pdf", sep=""), width=15, height=15, units="in", res=300)
+   hist(d4_multi$value)
+   lines(x=c(disthreshold, disthreshold), y=c(0,1000), col="blue", lwd=5)
+   dev.off()
+   
+  if(identical(names(nodenumedge), names(mem))){
+    return(list(sub_df=sub_df, graph_cors=graph_cors))
+   }else{
+     print("error: node names and edge names not identical")
+   }
+} ## End Function
+
+MakeNetworkPlot <- function(graph_cors,filename, df_info, disthreshold=0.1){
+    #df_info has three columns:
+      #gtcontig_pos, name and position of the contig
+      #myocol, plotting color
+      #NewContigIDMod, plotting name
+    (myo <- match(V(graph_cors)$name, df_info$gtcontig_pos))
+    head(V(graph_cors)$name)
+    head(df_info$gtcontig_pos[myo])
+    myocol <- df_info$myocol[myo]
+    myoname <- df_info$NewContigIDMod[myo]
+  
+    
+    ggraph(graph_cors) +
+    geom_edge_fan2(aes(edge_alpha = 0.01)) +
+    guides(edge_alpha = "none", edge_width = "none") +
+    #scale_edge_colour_gradientn(limits = c(-1, 1), 
+    #                            colors = c("firebrick2", "dodgerblue2")) +
+    geom_node_point(color = myocol, size = 15) +
+    geom_node_text(aes(label = myoname, size=0.1)) +
+    theme_graph() #+
+    #labs(title = filename)
+  
+    options(warn=-1)
+
+    ggsave(paste("../results/Network", filename,disthreshold, "dist.pdf", sep="_"), width=15, height=15, units="in")
+}
+
+
+```
+
+```{r calc networks}
+results_pine3$clustername <- results_pine3$cluster
+results_pine3$clustername <- mapvalues(results_pine3$clustername, from=1:4, to=
+      c("Aridity-1", "Geography-2", "Freezing-3", "Multi-4"))
+#levels(factor(results_pine3$clustername))
+
+colSums(table(results_pine3$gtcontig[results_pine3$Group1_logical], results_pine3$clustername[results_pine3$Group1_logical]))
+
+snp_distmat <- as.matrix(snp_dist)
+results_pine3$subcluster <- NA
+results_pine3$numedges <- NA
+results_pine3$allele <- NA
+results_pine3$module_col <- NA
+
+dist_thresh <- 0.1
+
+#### Multi Dist Network ####
+mm <- MakeDistNetwork(4, "Multi", dist_thresh) 
+  # if you get an error here about invalid font type, be sure to 
+  # uncomment the "#font_import()" at the setup in the beginning of the code
+  # and then loadfonts()
+  str(mm)
+  hist(mm$sub_df$subcluster)
+  
+  mm_high <- MakeDistNetwork(4, "Multi", dist_thresh+0.05) 
+  mm_low <- MakeDistNetwork(4, "Multi", dist_thresh-0.05) 
+  hist(mm$sub_df$subcluster+0.01, breaks=c(1:10))
+  hist(mm_high$sub_df$subcluster+0.01, breaks=c(1:10))
+  hist(mm_low$sub_df$subcluster+0.01, breaks=c(1:40))
+  
+  ### Assign subcluster membership and number edges
+  mind <- match(mm$sub_df$gtcontig_pos, results_pine3$gtcontig_pos)
+  results_pine3$subcluster[mind] <- mm$sub_df$subcluster
+  results_pine3$numedges[mind] <- mm$sub_df$numedge
+  results_pine3$module_col[mind] <- mm$sub_df$myocol
+  
+  ### Assign allele ID based on sign of association determined from data vis
+  ### For Multi group is it MAT
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]>0]<- "+"
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]<0]<- "-"
+  which(names(results_pine3)=="MAT_raw_rho")      
+  
+  # Number of alleles "evolving" in each direction relative to ancestor
+  table(results_pine3$allele[mind])  
+  # direction of SNPs in each contig
+  table(results_pine3$gtcontig[mind], results_pine3$allele[mind])
+  mmMulti <- mm
+  
+#### Aridity Dist Network ####
+rm(mm)
+mm <- MakeDistNetwork(1, "Aridity", dist_thresh) 
+  #str(mm)
+  hist(mm$sub_df$subcluster)
+  
+   mm_high <- MakeDistNetwork(1, "Aridity", dist_thresh+0.05) 
+  mm_low <- MakeDistNetwork(1, "Aridity", dist_thresh-0.05) 
+  
+  hist(mm$sub_df$subcluster+0.01, breaks=c(1:10))
+  hist(mm_high$sub_df$subcluster+0.01, breaks=c(1:10))
+  max(mm_low$sub_df$subcluster)
+  hist(mm_low$sub_df$subcluster+0.01, breaks=c(1:100))
+  
+  
+  ### Assign subcluster membership and number edges
+  mind <- match(mm$sub_df$gtcontig_pos, results_pine3$gtcontig_pos)
+  results_pine3$subcluster[mind] <- mm$sub_df$subcluster
+  results_pine3$numedges[mind] <- mm$sub_df$numedge
+  results_pine3$module_col[mind] <- mm$sub_df$myocol
+  ### Assign allele ID based on sign of association determined from data vis
+  ### For Aridity group is it MAT
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]>0]<- "+"
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]<0]<- "-"
+
+  table(results_pine3$allele[mind]) 
+  # direction of SNPs in each contig
+  table(results_pine3$gtcontig[mind], results_pine3$allele[mind])
+  mmAridity <- mm
+  
+#### Geography Dist Network ####
+rm(mm)
+mm <- MakeDistNetwork(2, "Geography", dist_thresh) 
+  
+  hist(mm$sub_df$subcluster)
+  ### Assign subcluster membership and number edges
+  mind <- match(mm$sub_df$gtcontig_pos, results_pine3$gtcontig_pos)
+  results_pine3$subcluster[mind] <- mm$sub_df$subcluster
+  results_pine3$numedges[mind] <- mm$sub_df$numedge
+  results_pine3$module_col[mind] <- mm$sub_df$myocol
+  ### Assign allele ID based on sign of association determined from data vis
+  ### For Geography group is it MAT ????
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]>0]<- "+"
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]<0]<- "-"
+
+  table(results_pine3$allele[mind]) 
+  # direction of SNPs in each contig
+  table(results_pine3$gtcontig[mind], results_pine3$allele[mind])
+  mmGeog <- mm
+  
+#### Freezing Dist Network ####
+rm(mm)
+mm <- MakeDistNetwork(3, "Freezing", dist_thresh)
+ 
+  ### Assign subcluster membership and number edges
+  hist(mm$sub_df$subcluster)
+  mind <- match(mm$sub_df$gtcontig_pos, results_pine3$gtcontig_pos)
+  results_pine3$subcluster[mind] <- mm$sub_df$subcluster
+  results_pine3$numedges[mind] <- mm$sub_df$numedge
+  results_pine3$module_col[mind] <- mm$sub_df$myocol
+  ### Assign allele ID based on sign of association determined from data vis
+  ### For Freezing group is it LAT & Elevation
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]>0]<- "+"
+    results_pine3$allele[mind][results_pine3$MAT_raw_rho[mind]*results_pine3$Ances_flipNum[mind]<0]<- "-"
+
+  # total num SNPs increasing in freq in each direction of MAT
+  table(results_pine3$allele[mind]) 
+  mmFreez <- mm
+
+```  
+  
+```{r, label="figure out contig order for plotting, pain in the ASS"}  
+### Number of contigs in each cluster/subcluster combo
+  tapply(results_pine3$gtcontig, list(results_pine3$groupPlot, results_pine3$subcluster), function(x){length(levels(as.factor(x)))})
+  # 1 is multi
+  # 2 is aridity
+  # 3 is freezing
+  # 4 is geography
+  # each column is a submodule
+  
+  results_pine3$group_subMod <- NA
+  results_pine3$group_subMod[results_pine3$Group1_logical] <- paste(results_pine3$groupPlot[results_pine3$Group1_logical],results_pine3$subcluster[results_pine3$Group1_logical], sep=".")
+  
+  head(results_pine3[order(results_pine3$group_subMod),400:415,])
+  
+  contigsByMod <- table(results_pine3$gtcontig[results_pine3$Group1_logical], results_pine3$group_subMod[results_pine3$Group1_logical])
+  
+
+    
+  ### assign submodule ID to contig
+  firstAss <- apply(contigsByMod, 1, function(x){names(which(x==max(x)))})
+    # some of them have snps divided across submodules, take the 1st one for convention (these are all within groups)
+  str(firstAss)
+  secondAss <- unlist(lapply(firstAss,function(x)x[[1]]))
+  sort(secondAss)
+  
+  contig.subgroup.df <- data.frame(gtcontig=names(secondAss), group_subMod = secondAss)
+  contig.subgroup.df$group <- as.numeric(lapply(strsplit(as.character(contig.subgroup.df$group_subMod), split = "\\."), function(x)x[[1]]))
+  contig.subgroup.df$subMod <- as.numeric(lapply(strsplit(as.character(contig.subgroup.df$group_subMod), split = "\\."), function(x)x[[2]]))
+  
+  dim(contig.subgroup.df)
+  dim(contig.group.df)
+  contig.subgroup.df<-contig.subgroup.df[order(contig.subgroup.df$gtcontig),]
+  contig.group.df<- contig.group.df[order(contig.group.df$gtcontig),]
+  
+  head(contig.group.df)
+  head(contig.subgroup.df)
+  
+  contig.group.df.NEW <- merge(contig.group.df, contig.subgroup.df,
+                               by.x="gtcontig", by.y="gtcontig")
+  dim(contig.group.df.NEW)
+  head(contig.group.df.NEW , 20)
+  
+  contig.group.df.NEW<-contig.group.df.NEW[order(contig.group.df.NEW$group.x, contig.group.df.NEW$subMod, contig.group.df.NEW$nout, decreasing=c(FALSE,FALSE,TRUE)),]
+  head(contig.group.df.NEW,20)
+  
+  contig.group.df.NEW$NewContigIDMod <- 1:nrow(contig.group.df.NEW)
+
+  head(contig.group.df.NEW)  
+
+  results_pine3$NewContigIDMod[results_pine3$Group1_logical] <- results_pine3$gtcontig[results_pine3$Group1_logical] 
+  
+  results_pine3$NewContigIDMod[results_pine3$Group1_logical] <- mapvalues(results_pine3$NewContigIDMod[results_pine3$Group1_logical], 
+                from=contig.group.df.NEW$gtcontig,
+                to=contig.group.df.NEW$NewContigIDMod)
+  
+  # direction of SNPs in each contig for MAT for each contig
+  table(as.numeric(results_pine3$NewContigIDMod[results_pine3$Group1_logical]), results_pine3$allele[results_pine3$Group1_logical])
+  
+  # direction of SNPs in each contig for MAT for each module
+  table(as.numeric(results_pine3$group_subMod[results_pine3$Group1_logical]), results_pine3$allele[results_pine3$Group1_logical])
+ 
+```
+
+### make network plots with contigs ordered by their submodule
+```{r make network plots}
+levels(factor(results_pine3$clustername))
+### Multi Network plot ####
+  littledf <- data.frame(gtcontig_pos = results_pine3$gtcontig_pos[which(results_pine3$clustername=="Multi-4")],
+            NewContigIDMod=results_pine3$NewContigIDMod[which(results_pine3$clustername=="Multi-4")])
+  head(littledf)
+  dim(littledf)
+  head(mmMulti$sub_df)
+  dim(mmMulti$sub_df)
+  mmMulti$sub_df$orderplot <- 1:nrow(mmMulti$sub_df)
+  fornetworkdf <- merge(mmMulti$sub_df,littledf)
+  MakeNetworkPlot(mmMulti$graph_cors, df_info = fornetworkdf, filename="Multi")
+
+### Aridity Network plot ####
+  littledf <- data.frame(gtcontig_pos = results_pine3$gtcontig_pos[which(results_pine3$clustername=="Aridity-1")],
+            NewContigIDMod=results_pine3$NewContigIDMod[which(results_pine3$clustername=="Aridity-1")])
+  head(littledf)
+  dim(littledf)
+  head(mmAridity$sub_df)
+  dim(mmAridity$sub_df)
+  mmAridity$sub_df$orderplot <- 1:nrow(mmAridity$sub_df)
+  fornetworkdf <- merge(mmAridity$sub_df,littledf)
+  MakeNetworkPlot(mmAridity$graph_cors, df_info = fornetworkdf, filename="Aridity")
+
+### Freezing Network plot ####
+  littledf <- data.frame(gtcontig_pos = results_pine3$gtcontig_pos[which(results_pine3$clustername=="Freezing-3")],
+            NewContigIDMod=results_pine3$NewContigIDMod[which(results_pine3$clustername=="Freezing-3")])
+  head(littledf)
+  dim(littledf)
+  head(mmFreez$sub_df)
+  dim(mmFreez$sub_df)
+  mmFreez$sub_df$orderplot <- 1:nrow(mmFreez$sub_df)
+  fornetworkdf <- merge(mmFreez$sub_df,littledf)
+  MakeNetworkPlot(mmFreez$graph_cors, df_info = fornetworkdf, filename="Freezing")
+
+### Geography Network plot ####
+  littledf <- data.frame(gtcontig_pos = results_pine3$gtcontig_pos[which(results_pine3$clustername=="Geography-2")],
+            NewContigIDMod=results_pine3$NewContigIDMod[which(results_pine3$clustername=="Geography-2")])
+  head(littledf)
+  dim(littledf)
+  head(mmGeog$sub_df)
+  dim(mmGeog$sub_df)
+  mmGeog$sub_df$orderplot <- 1:nrow(mmGeog$sub_df)
+  fornetworkdf <- merge(mmGeog$sub_df,littledf)
+  MakeNetworkPlot(mmGeog$graph_cors, df_info = fornetworkdf, filename="Geography")
+```
+
+
+Add GO terms and super convergent status (Yeaman 2016) to contig.group.df
+```{r, "Add info to contig.group.df"}
+### Super convergent status
+  conv.ind <- which(contig.group.df.NEW$gtcontig %in% sy$V1)
+  contig.group.df.NEW$is.convergent <- FALSE
+  contig.group.df.NEW$is.convergent[conv.ind ] <- TRUE
+  contig.group.df.NEW[conv.ind ,]
+
+### GO terms
+  go.df <- read.table("../data/tair_pine_clusterall", header=TRUE)
+  head(go.df)
+  dim(go.df)
+  go.df$pine_comp <- paste(go.df$pine_comp, "_seq1", sep="")
+  m1<- match(go.df$pine_comp, contig.group.df.NEW$gtcontig)
+  names(go.df)[1] <- "gtcontig"
+  contig.group.df.NEW2<-merge(contig.group.df.NEW,go.df, all.x=TRUE)
+  head(contig.group.df.NEW2)
+
+  
+      colorsByMod <- data.frame(subMod = results_pine3$group_subMod[results_pine3$Group1_logical],
+                                module_col= results_pine3$module_col[results_pine3$Group1_logical])
+    dim(colorsByMod)
+    colorsByMod<-colorsByMod[-which(duplicated(colorsByMod)),]  
+    head(colorsByMod)
+    dim(colorsByMod)
+    #head(colorsByMod)
+    
+    contig.group.df.NEW2 <- merge(contig.group.df.NEW2,
+                                  colorsByMod,
+                                  by.x="group_subMod",
+                                  by.y="subMod")
+    dim(contig.group.df.NEW2)  
+    head(contig.group.df.NEW2)
+```
+
+
+## Pleiotropy barplot setup
+
+```{r}
+#match SNP colors to contig dat
+# Cluster color for outline
+  #Aridity = table(limit.df$gtcontig,limit.df$cluster==1)[,2],
+  #Geography = table(limit.df$gtcontig,limit.df$cluster==2)[,2],
+  #Freezing = table(limit.df$gtcontig,limit.df$cluster==3)[,2],
+  #Multi = table(limit.df$gtcontig,limit.df$cluster==4)[,2]
+  #adjustcolor("yellow",0.5)("brown",0.5)
+  #adjustcolor("lightgreen",0.5) ("darkgreen",0.5)
+  #adjustcolor("orange",0.5) ("brown",0.5)
+  #adjustcolor("lightblue",0.5) adjustcolor("blue",0.5)
+  
+  #results_pine3$clustercol[results_pine3$cluster==1] = "orange"
+  #results_pine3$clustercol[results_pine3$cluster==2] = "yellow"
+  #results_pine3$clustercol[results_pine3$cluster==3] = "blue"
+  #results_pine3$clustercol[results_pine3$cluster==4] = "green"
+  #table(as.character(results_pine3$clustercol[results_pine3$Group1_logical]))
+  
+  # num snps per module
+  (t1 <- table(as.character(results_pine3$group_subMod[results_pine3$Group1_logical])))
+  sum(t1)
+
+  
+# Contig color for points
+  #m <- match(results_pine3$gtcontig[results_pine3$Group1_logical], contig.group.df$gtcontig)
+  #m
+  #results_pine3$contigcol[results_pine3$Group1_logical] <- contig.group.df$col[m]
+
+  #results_pine3$contigID <- NA
+  #results_pine3$contigID[results_pine3$Group1_logical] <- contig.group.df$ContigID[m]
+  #results_pine3$group[results_pine3$Group1_logical] <- contig.group.df$group[m]
+  
+  write.csv(results_pine3[results_pine3$Group1_logical,], file = "../results/PineTopCandidates.csv")
+
+
+  table(results_pine3$group_subMod, results_pine3$pine_super_convergent)
+    # super convergent SNPs found in elevation freezing group or geography group,
+    # but mostly freezing group
+  
+```
+
+
+## Make Pleiotropy Barplot with contig colors
+
+```{r}
+toplot<-t(table(results_pine3$gtcontig[results_pine3$Group1_logical], 
+      results_pine3$group_subMod[results_pine3$Group1_logical]))
+dim(toplot)
+
+tocol <- data.frame(group_subMod=results_pine3$group_subMod[results_pine3$Group1_logical], 
+module_col=results_pine3$module_col[results_pine3$Group1_logical])
+tocol <- tocol[-which(duplicated(tocol)),]
+head(tocol); dim(tocol)
+
+  ## order for contigs
+  head(toplot)
+  head(contig.group.df.NEW2)
+  contig.group.df.NEW2 <- contig.group.df.NEW2[order(contig.group.df.NEW2$NewContigIDMod),]
+  my.ord <- match(colnames(toplot), contig.group.df.NEW2$gtcontig)
+ 
+  dim(toplot)
+  #dim(contigdat)
+  colnames(toplot) <- contig.group.df.NEW2$NewContigIDMod[my.ord]
+  head(toplot)
+  toplot <- toplot[,order(as.numeric(colnames(toplot)))]
+  head(toplot)
+  dim(toplot)
+  
+  identical(as.numeric(colnames(toplot)), as.numeric(contig.group.df.NEW2$NewContigIDMod))
+  # THIS SHOULD BE TRUE
+  
+  # order for colors
+  my.ord.col <- match(rownames(toplot), tocol$group_subMod)
+  
+ 
+ 
+  
+pdf("../results/PineVenn_horiz.pdf", width=20, height=6)
+  par(mar=c(6,6, 1,1))
+  #b<- barplot(toplot, beside = FALSE, horiz = FALSE, las=2, col=c("lightgreen", "orange", "lightblue",  "yellow"), cex.names=1, cex.axis = 2,  border = c("darkgreen", "brown", "blue",  "brown"), cex=2,  ylab="Number of SNPs", xlab= "Contig ID", ylim=c(-8,50), names.arg = rep("", 108), cex.lab=2)
+   b<-barplot(toplot, las=2, 
+          col=as.character(tocol$module_col[my.ord.col]),
+          cex.names=1,
+          cex.axis=2,
+          border="white",
+          cex=2,
+          ylab="Number of SNPs",
+          xlab= "Contig ID",
+          ylim=c(-8,50),
+          names.arg = rep("", 108), 
+          cex.lab=2)
+
+  #legend(100, 30, c("Multi", "Aridity", "Freezing",  "Geography"), bty="n", fill=c("lightgreen", "orange", "lightblue",  "pink"), border = "white", cex=2)
+
+  points(b, rep(-1,108), pch=20, 
+         col=as.character(contig.group.df.NEW2$module_col),
+         cex=2)
+  
+  text(b, rep(-2, 108), colnames(toplot), col="black", #as.character(contig.group.df.NEW2$module_col), 
+         srt=90, adj=1) 
+  convt <- rep("", 108)
+  convt[contig.group.df.NEW2$is.convergent] <- "*"
+  text(b, rep(-6,108), convt, cex=2)
+  
+  text(6, 35, "Multi", col="forestgreen", cex=3)
+  text(20, 35, "Aridity", col="red", cex=3)
+  text(48, 35, "Freezing", col="cyan3", cex=3)
+  text(95, 35, "Geography", col="gold3", cex=3)
+dev.off()
+```
+
+#### Annotation barplot
+
+```{r}
+ann2 <- as.character(results_pine3$X_annotation)
+ann2[grep("nonsyn*",ann2)] <- "nonsyn"
+
+all_an <- table(ann2[!is.na(results_pine3$tcontig)])
+# since tcontigs were only used to develop top candidate list
+out_an <- table(ann2[results_pine3$Group1_logical])
+
+dfall <- data.frame( all_an/sum(all_an))
+dfout <- data.frame(out_an/sum(out_an))
+colnames(dfout)[2] <- "FreqOut"
+compare_ann <- merge(dfall, dfout ,  all.x=TRUE)
+
+compare_ann
+compare_ann <- compare_ann[-which(compare_ann$Var1 %in% c("HAS_INDEL", "mismatch_altref", "multi-allelic")),]
+
+compare_ann
+
+pdf("../results/annotation.pdf", width=8, height=5)
+  par(mar=c(8,4,1,1))
+  barplot(t(as.matrix(compare_ann[,2:3])), beside=TRUE, ylab="Proportion", names.arg = compare_ann$Var1, las=2)
+  legend(20, 0.5, c("All SNPs", "Top Candidates"), fill=c("grey30", "grey80"))
+dev.off()
+```
+   
+   
+## Galaxy plots
+
+```{r} 
+env[grep("MAT", colnames(env)),]
+
+pdf(file = "../results/GalaxyExample_inMATvMAP2.pdf", width=5, height=5)
+x<- results_pine3$MAT_raw_rho*results_pine3$Ances_flipNum
+y <- results_pine3$MAP_raw_rho*results_pine3$Ances_flipNum
+par(mar=c(6,6,1,1))
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and\nMean Annual Precipitation" , 
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),PE=0.33, PElab=c("MAT", "MAP"))
+dev.off()
+
+pdf(file = "../results/GalaxyExample_inMATvMAP2_Group1.pdf", width=5, height=5)
+x<- results_pine3$MAT_raw_rho*results_pine3$Ances_flipNum
+y <- results_pine3$MAP_raw_rho*results_pine3$Ances_flipNum
+par(mar=c(6,6,1,1))
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and\nMean Annual Precipitation" , 
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = "red",
+       sub_bgcolor = "blue",
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),PE=0.30,
+       # note hard-coding for PE
+       PElab=c("MAT", "MAP"))
+dev.off()
+
+
+pdf(file = "../results/GalaxyExample_inMATvMAP2_EachGroup.pdf", width=5, height=5)
+par(mar=c(6,6,1,1))
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and\nMean Annual Precipitation" , 
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),PE=0.30,
+       # note hard-coding for PE
+       PElab=c("MAT", "MAP"),
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5)
+)
+dev.off()
+
+
+pdf(file = "../results/GalaxyNew_inMATvMAP2.pdf", width=8, height=13)
+par(mfrow=c(3,2), mar=c(6,6,1,1), oma = c(4, 0, 1, 0))
+
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and\nMean Annual Precipitation" , 
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+       PE=0.30, PElab=c("MAT", "MAP"))
+        # note hard-coding for PE
+  text(-0.7, 0.7, "A", cex=2)
+  mtext("Associations", side=3)
+
+x<- results_pine3$MAT_rhoave*results_pine3$Ances_flipNum
+y <- results_pine3$MAP_rhoave*results_pine3$Ances_flipNum
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between structure-corrected\nallele frequency and Mean Annual Temperature", 
+       ylab= "Spearman's rho between structure-corrected\nallele frequency and Mean Annual Precipitation" , 
+       nbin=100, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3),
+      x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+       PE=0.30, PElab=c("MAT", "MAP"))
+      # note hard-coding for PE
+  text(-0.25, 0.25, "B", cex=2)
+  mtext("Structure-corrected associations", side=3)
+
+### MAT VS ELVATION
+x<- results_pine3$MAT_raw_rho*results_pine3$Ances_flipNum
+y <- results_pine3$ELEVATION_raw_rho*results_pine3$Ances_flipNum
+
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and Elevation" , 
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+       PE=-0.45, PElab=c("MAT", "ELEVATION"))
+# note hard-coding for PE
+  text(-0.7, 0.7, "C", cex=2)
+
+x<- results_pine3$MAT_rhoave*results_pine3$Ances_flipNum
+y <- results_pine3$ELEVATION_rhoave*results_pine3$Ances_flipNum
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between structure-corrected\nallele frequency and Mean Annual Temperature", 
+       ylab= "Spearman's rho between structure-corrected\nallele frequency and Elevation" , 
+       nbin=100, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3),
+      x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+      PE=-0.45, PElab=c("MAT", "ELEVATION"))
+# note hard-coding for PE
+  text(-0.25, 0.25, "D", cex=2)
+
+### MAT VS LAT
+x<- results_pine3$MAT_raw_rho*results_pine3$Ances_flipNum
+y <- results_pine3$LAT_raw_rho*results_pine3$Ances_flipNum
+
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and Latitude" , 
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+       PE=-0.5, PElab=c("MAT", "LAT"))
+# note hard-coding for PE
+    text(-0.7, 0.7, "E", cex=2)
+
+x<- results_pine3$MAT_rhoave*results_pine3$Ances_flipNum
+y <- results_pine3$LAT_rhoave*results_pine3$Ances_flipNum
+galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between structure-corrected\nallele frequency and Mean Annual Temperature", 
+       ylab= "Spearman's rho between structure-corrected\nallele frequency and Latitude" , 
+       nbin=100, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3),
+      x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+      PE=-0.5, PElab=c("MAT", "LAT"))
+# note hard-coding for PE
+  text(-0.25, 0.25, "F", cex=2)
+  
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("bottom", c("Multi", "Aridity", "Freezing", "Geography"), xpd = TRUE, horiz = TRUE, inset = c(0, 
+#    0), bty = "n", pch = 21, col= c("green", "orange", "blue", "yellow"), pt.bg = c("darkgreen", "brown2", "lightblue", "goldenrod"), cex = 2)
+# xpd = TRUE tells R that it is OK to plot outside the region horiz = TRUE
+# tells R that I want a horizontal legend inset = c(x,y) tells R how to move
+# the legend relative to the 'bottom' location bty = 'n' means that 'no' box
+# will be drawn around it pch and col are the types and colors of points cex
+# = 2 makes the legend twice as large as other fonts
+
+dev.off()
+```
+
+## Galaxy plots in PC environments
+```{r}
+hist(log10(results_pine3$bayenv_PCA1)) # these are BF
+hist(log10(results_pine3$bayenv_PCA2)) # these are BF
+x <- log10(results_pine3$bayenv_PCA1)
+y <- log10(results_pine3$bayenv_PCA2)
+z <- log10(results_pine3$bayenv_PCA3)
+min(x); min(y); min(z)
+
+pdf("../results/PCenvi_BF.pdf", width=5, height=8)
+par(mar=c(4,4,1,1), mfrow=c(2,1))
+galaxyplot(x,y, nbin=100, xlim=c(-1.6,20), ylim=c(-1.6,20),
+           xlab = "BF in PCA1", ylab="BF in PCA2",
+           x_sub=x[results_pine3$Group1_logical], 
+           y_sub=y[results_pine3$Group1_logical],
+          sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+          plotPE=FALSE, plot0=FALSE)
+  abline(v = 2)
+  abline(h = 2)
+  text(0, 18, "A")
+  # 
+  # galaxyplot(x,y, nbin=100, xlim=c(-1.6,8), ylim=c(-1.6,8),
+  #          xlab = "BF in PCA1", ylab="BF in PCA2",
+  #          x_sub=x[results_pine3$Group1_logical], 
+  #          y_sub=y[results_pine3$Group1_logical],
+  #         sub_outlinecolor = results_pine3$clustercol[results_pine3$Group1_logical],
+  #         sub_bgcolor = results_pine3$contigcol[results_pine3$Group1_logical],
+  #         plotPE=FALSE, plot0=FALSE)
+  #   abline(v = 2)
+  #   abline(h = 2)
+  #     text(-1, 7, "B")
+    
+galaxyplot(x,z, nbin=100, xlim=c(-1.6,20), ylim=c(-1.6,20),
+           xlab = "BF in PCA1", ylab="BF in PCA3",
+           x_sub=x[results_pine3$Group1_logical], 
+           y_sub=z[results_pine3$Group1_logical],
+          sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+          plotPE=FALSE, plot0=FALSE)
+  abline(v = 2)
+  abline(h = 2)
+      text(0, 18, "B")
+dev.off()  
+
+
+table(results_pine3$clustername)
+  # cluster that SNP belongs to
+table(results_pine3$group_subMod)
+  # slight differences here because this is cluster that CONTIG belongs to
+  # (not really relevant for SNPs)
+
+plot(log10(results_pine3$bayenv_PCA1[which(results_pine3$clustername=="Freezing-3")]), 
+     log10(results_pine3$bayenv_PCA2[which(results_pine3$clustername=="Freezing-3")]))
+
+table(log10(results_pine3$bayenv_PCA1[results_pine3$clustername=="Freezing-3"]) > 2)
+
+# Number missed by 1st PC
+p1 <- table(results_pine3$clustername, log10(results_pine3$bayenv_PCA1)>2 )
+p1[,1]/rowSums(p1) # number missed
+
+# Number missed by 2nd PC
+p2 <- table(results_pine3$clustername,  log10(results_pine3$bayenv_PCA2)>2 )
+p2[,1]/rowSums(p2) # number missed
+
+# Number missed by 3rd PC
+p3 <- table(results_pine3$clustername,log10(results_pine3$bayenv_PCA3)>2)
+p3[,1]/rowSums(p3) # number missed
+
+
+
+log10(results_pine3$bayenv_PCA3)[which(results_pine3$clustercol=="orange")]
+log10(results_pine3$bayenv_PCA3)[which(results_pine3$clustercol=="orange")]
+
+# Number missed by 1st 10 PCs
+p10 <- table(results_pine3$clustername, log10(results_pine3$bayenv_PCA1)>2 |
+        log10(results_pine3$bayenv_PCA2)>2 | 
+        log10(results_pine3$bayenv_PCA3)>2 |
+        log10(results_pine3$bayenv_PCA4)>2 |
+        log10(results_pine3$bayenv_PCA5)>2 |
+        log10(results_pine3$bayenv_PCA6)>2 |
+        log10(results_pine3$bayenv_PCA7)>2 |
+        log10(results_pine3$bayenv_PCA8)>2 |
+        log10(results_pine3$bayenv_PCA9)>2 |
+        log10(results_pine3$bayenv_PCA10)>2 
+      )
+p10[,1]/rowSums(p10) # number missed
+
+# Freezing and geography groups would have been largely missed
+
+x <- results_pine3$bayenv_PCA1_rhoave
+y <- results_pine3$bayenv_PCA2_rhoave
+par(mar=c(6,6,1,1))
+galaxyplot(x,y, nbin=100, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3),
+           xlab = "Bayenv rho in PCA1", ylab="Bayenv rho in PCA2",
+           x_sub=x[results_pine3$Group1_logical], 
+           y_sub=y[results_pine3$Group1_logical],
+          sub_outlinecolor = results_pine3$clustercol[results_pine3$Group1_logical],
+          sub_bgcolor = results_pine3$contigcol[results_pine3$Group1_logical],
+          plotPE=TRUE)
+
+x <- results_pine3$bayenv_PCA1_rhoave
+y <- results_pine3$bayenv_PCA3_rhoave
+par(mar=c(6,6,1,1))
+galaxyplot(x,y, nbin=100, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3),
+           xlab = "Bayenv rho in PCA1", ylab="Bayenv rho in PCA3",
+           x_sub=x[results_pine3$Group1_logical], 
+           y_sub=y[results_pine3$Group1_logical],
+          sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+          plotPE=TRUE)
+
+```
+
+
+## Galaxy in multivariate environments
+
+```{r}
+
+whichvars <- c("MAT","MAP", "LAT", "MSP", "MWMT", "PAS" , "MCMT") #Eref
+
+pdf("../results/multvariateEnviGalaxy4clusters.pdf", width=4*length(whichvars), height=4*length(whichvars))
+par(mfrow=c(length(whichvars), length(whichvars)), mar=c(0.3,0.7,0,0.7), oma=c(10,10,0,0))
+for (i in 1:length(whichvars)){
+  for (j in 1:length(whichvars)){
+    if(i==j){
+      plot(1,1,bty="n", xaxt="n", yaxt="n", xlab="", ylab="", col="white")
+      text(1,1, whichvars[i], cex=5)  
+    }
+    if(j>i){
+      plot(1,1,bty="n", xaxt="n", yaxt="n", xlab="", ylab="", col="white")
+      if(j==2 & i==1){
+        legend(1,1, legend = c("Freezing", "Aridity", "Multi", "Geography"), 
+               pch=c(22,24,21), cex=4, bty="n",xjust=0.5,yjust=0.5,
+               col=c("blue", "brown", "darkgreen", "brown"), 
+               pt.bg=c("lightblue", "orange", "lightgreen", "yellow"))
+      }
+    }
+      
+    if(i>j){
+      print(c(i,j))
+      print(c(whichvars[j], whichvars[i]))
+      # Get EE corr
+      ri <- grep(paste("^",whichvars[j],sep=""),rownames(cormat2)) #env_clust$carpet))
+      cj <- grep(paste("^",whichvars[i],sep=""),colnames(cormat2))#env_clust$carpet))
+      print(c(rownames(cormat2)[ri], colnames(cormat2)[cj]))
+      PE<- round(cormat2[ri,cj],2)
+      
+      whichx <- which(names(results_pine3)==paste(whichvars[j], "_raw_rho", sep=""))
+      whichy <- which(names(results_pine3)==paste(whichvars[i], "_raw_rho", sep=""))
+      print(names(results_pine3)[c(whichx,whichy)])
+      x <- results_pine3[,whichx]*results_pine3$Ances_flipNum
+      y <- results_pine3[,whichy]*results_pine3$Ances_flipNum
+      
+      galaxyplot(x=x, y=y, 
+       xlab= "Spearman's rho between allele frequency and\nMean Annual Temperature", 
+       ylab= "Spearman's rho between allele frequency and Latitude" , 
+       nbin=100, xlim=c(-0.8,0.8), ylim=c(-0.8,0.8),
+       x_sub=x[results_pine3$Group1_logical], 
+       y_sub=y[results_pine3$Group1_logical],
+       sub_outlinecolor = results_pine3$module_col[results_pine3$Group1_logical],
+       sub_bgcolor = adjustcolor(results_pine3$module_col[results_pine3$Group1_logical],alpha.f = 0.5),
+       PE=PE, PElab=c(whichvars[i], whichvars[j]))
+    } # end if
+  } # end j
+} # end i
+  mtext(text = "Correlation between allele frequency and environment (in column)", side=1, outer=TRUE, line=5, cex=3, adj=0.1)
+  mtext(text = "Correlation between allele frequency and environment (in row)", side=2, outer=TRUE, line=5, cex=3, adj=0.1)
+dev.off()
+```
+
+# Other data visualization
+```{r} 
+pdf("../results/HistTopSNPs.pdf", width=10, height=6)
+  barplot(G1_hist, xlab="Contig", ylab="Number of SNPs", main=paste("Distribution of",Group1_nSNPs, "top SNPs", "in",Group1_ncontigs, "contigs"), las=2, cex.names=0.3)
+dev.off()
+ 
+is.superdf2 <- is.superdf[num.var.raw.out>0,]
+colnames(is.superdf2) <- sub("_raw_p", "", colnames(is.superdf))
+
+pdf("../results/HistOutliersPerEnvi.pdf", width=10, height=6)
+  par(mar=c(6,6,1,1))
+  barplot(colSums(is.superdf2), las=2)
+dev.off()
+
+
+
+head(is.superdf2)
+a <- vennCounts(is.superdf2[,c(1, 2, 3, 4, 10)])
+a
+pdf("../results/VennEx.pdf", width=6, height=6)
+  vennDiagram(a)
+dev.off()  
+```
+
+### Co-expression vs. co-association
+```{r}
+coex <- read.table("../data/co-expression/Pine_CytoscapeInput-nodes-12-0.1.txt", header=TRUE)
+head(coex)
+colnames(coex) <- c( "contig", "altName", "coexCluster")
+nlevels(coex$coexCluster)
+nrow(coex)
+
+contig <- c()
+coexCluster <- c()
+index <- c()
+j=0
+for (i in 1:length(coex$contig)){
+  p <- grep(as.character(coex$contig[i]), as.character(contig.group.df.NEW2$gtcontig))
+  if (length(p)>0){
+    j=j+1
+    contig[j] <- as.character(coex$contig[i])
+    coexCluster[j] <- as.character(coex$coexCluster[i])
+    index[j] <- p
+    }
+}
+is.coex <- data.frame(contig, coexCluster, index)
+is.coex
+# Proportion of differentially expressed genes
+# in top candidates
+nrow(is.coex)
+nrow(coex)
+nrow(is.coex)/nrow(coex)
+
+contig.group.df.NEW2$diffExp <- FALSE
+contig.group.df.NEW2$diffExp[index] <- TRUE
+contig.group.df.NEW2$contigcoEx <- NA
+contig.group.df.NEW2$contigcoEx[index] <- contig
+contig.group.df.NEW2$coexCluster <- NA
+contig.group.df.NEW2$coexCluster[index] <- coexCluster
+
+colnames(contig.group.df.NEW2)
+#data check
+cbind(contig.group.df.NEW2$gtcontig[contig.group.df.NEW2$diffExp], 
+      contig.group.df.NEW2$contig[contig.group.df.NEW2$diffExp])
+
+# Percent of top candidates differentially expressed
+sum(contig.group.df.NEW2$diffExp)
+sum(contig.group.df.NEW2$diffExp)/nrow(contig.group.df.NEW2)
+
+
+contig.coex <- contig.group.df.NEW2[contig.group.df.NEW2$diffExp,-16]
+# note hard coding
+contig.coex <- contig.coex[order(contig.coex$coexCluster),]
+contig.coex
+contig.coex$coexOrd <- 1:nrow(contig.coex)
+contig.coex
+contig.coex[contig.coex$coexOrd,]
+
+contig.coex$coexX <- contig.coex$coexOrd*108/nrow(is.coex)
+plot(contig.coex$coexOrd, contig.coex$coexX)
+contig.coex$coexX[contig.coex$coexOrd]
+contig.coex$coexCluster[contig.coex$coexCluster=="turquoise"] = "darkgreen"
+contig.coex$coexCluster[contig.coex$coexCluster=="yellow"] = "magenta"
+contig.coex$coexpch <- contig.coex$coexCluster
+contig.coex$coexpch<-as.numeric(mapvalues(contig.coex$coexpch, 
+          from = c("blue", "brown", "red", "darkgreen", "magenta"),
+          to = c(21, 22, 23, 24, 25)))
+
+## Plot
+pdf("../results/CoexpressionVsCoassociation.pdf", width=8, height=4)
+par(mar=c(4,0,0,0))
+plot(0,0, col=rgb(0,0,0,0), xlim=c(0, 108), ylim=c(0,0.7),
+     bty="l", xlab= "Contig ID (co-association module)", yaxt="n", ylab="")
+points(contig.group.df.NEW2$NewContigIDMod, rep(0, 108),
+       col = as.character(contig.group.df.NEW2$module_col),
+       pch=20)
+points(contig.coex$coexX[contig.coex$coexOrd], rep(0.2, nrow(is.coex)),
+            bg = as.character(contig.coex$coexCluster[contig.coex$coexOrd]),
+            pch=contig.coex$coexpch[contig.coex$coexOrd], cex=1
+            )
+for (i in 1:nrow(contig.coex)){
+  lines(x=c(contig.coex$NewContigIDMod[i], contig.coex$coexX[i]),
+        y=c(0, 0.2),
+        col=as.character(contig.coex$module_col[i]))
+}
+levels(factor(contig.coex$coexCluster))
+text(108/2, 0.25, "Co-expression cluster", cex=1)
+legend(x =  108/2, y=0.37,
+         c("P2", "P3", "P6", "P7", "P8"),
+      pt.bg=c("blue", "brown", "red", "darkgreen", "magenta"),
+      pch=21:25, pt.cex =2, xjust=0.5,
+      bty="n", horiz=TRUE)
+dev.off()
+
+table(as.numeric(contig.coex$group_subMod), contig.coex$coexCluster)
+
+write.csv(contig.group.df.NEW2,"../results/topCandidateContigs.csv")
+```
+
+From Yeaman et al 2014:
+
+For pine, the P1 cluster was downregulated in the MWbs and HD treatments and had an over-representation of genes related to stress and stimulus response (Table S4; Fig. 6). The P4 and P8 clusters also contained genes relating to stress and stimulus response and were upregulated in the HD and MWbs treatments, as were genes in the P6 group. The P2 cluster had genes associ- ated with the regulation of transcription and their expression was strongly influenced by all treatments. Genes relating to lipid and carbohydrate metabolism, photosynthesis and response to stimu- lus were over-represented in the P7 cluster. Finally, similar to the S1, S12, and S7 clusters in spruce, the P3 cluster in pine con- sisted of genes upregulated in the MWbs treatment that were associated with reproduction and biotic stimulus.

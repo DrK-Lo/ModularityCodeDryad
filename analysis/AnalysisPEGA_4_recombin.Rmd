@@ -1,0 +1,264 @@
+---
+title: "AnalysisPEGA_4_recomb"
+author: "Katie Lotterhos"
+date: "6/1/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(fields)
+library(superheat)
+```
+
+```{r}
+### Load top candidates
+topcan <- read.csv("../results/topCandidateContigs.csv")
+topcan <- topcan[order(topcan$NewContigIDMod),]
+names(topcan)
+topcan <- topcan[,-17] #hard coding to remove GO terms
+head(topcan)
+
+### Load recombination rates
+recom <- read.table("../data/recombinationrates/katie_contigs_recombination.txt", header=TRUE)
+
+rownames(recom)
+
+
+which_topcan_to_recom <- match(topcan$gtcontig, rownames(recom))
+# each index corresponds to row in topcan. Gives the corresponding row/column where contig is found in recom.
+which(rownames(recom)==topcan$gtcontig[1])
+which_topcan_to_recom[1]
+topcan$whichrecom <- FALSE
+topcan$whichrecom[which_topcan_to_recom > 0] <- TRUE
+
+# subset topcan to those in the mapping panel
+topcan_recom <- topcan[which(topcan$whichrecom==TRUE),]
+head(topcan_recom, 20)
+dim(topcan_recom)
+dim(recom)
+
+cbind(as.character(topcan_recom$gtcontig), 
+      match(topcan_recom$gtcontig, rownames(recom)))
+# left column is correct order for plot
+# right column is location is location in the recombination matrix
+
+cbind(as.character(topcan_recom$gtcontig), topcan_recom$NewContigIDMod,
+      rownames(recom), 
+      match(rownames(recom), topcan_recom$gtcontig),
+      match(topcan_recom$gtcontig, rownames(recom)))
+
+
+cbind(as.character(topcan_recom$gtcontig),
+      rownames(recom)[which_recom_to_topcan],
+      rownames(recom)[match(topcan_recom$gtcontig, rownames(recom))])
+  # understand what match is doing
+
+which_recom_to_topcan <- match(topcan_recom$gtcontig, rownames(recom))
+
+which(topcan_recom$gtcontig[1]==rownames(recom))
+# which_recom_to_topcan[49]
+# corresponds to the way I would like to reorder the recombination matrix for plotting
+
+recom_mat_ordered <- recom[which_recom_to_topcan, which_recom_to_topcan]
+cbind(as.character(topcan_recom$gtcontig),
+      rownames(recom_mat_ordered))
+identical(as.character(topcan_recom$gtcontig),
+      rownames(recom_mat_ordered))
+
+rownames(recom_mat_ordered) <- topcan_recom$NewContigIDMod
+colnames(recom_mat_ordered) <- topcan_recom$NewContigIDMod
+
+rownames(recom_mat_ordered)
+
+
+recom_mat_ordered <- as.matrix(recom_mat_ordered)
+head(recom_mat_ordered)
+
+```
+
+
+
+
+```{r}
+### For legend of recomb rates
+max(recom_mat_ordered)
+min(recom_mat_ordered)
+png("../results/RecombHeatmapOrdered.png", width=12, height=12, units="in", res = 300)
+superheat(recom_mat_ordered,
+          row.dendrogram = FALSE,
+          col.dendrogram = FALSE,
+          pretty.order.rows = FALSE,
+          pretty.order.cols = FALSE,
+          #heat.col.scheme = "grey",
+          heat.pal = two.colors(start="black", end = "white", n=100),
+          heat.pal.values = seq(0,1,length.out = 100),
+          left.label.text.size = 4,
+          bottom.label.text.size = 4,
+          bottom.label.size = 0.13,
+          left.label.size = 0.075,
+          left.label.col = topcan_recom$module_col,
+          bottom.label.col = topcan_recom$module_col,
+          bottom.label.text.angle = 90,
+          force.bottom.label = TRUE,
+          force.left.label = TRUE,
+          column.title = "Recombination rates",
+          column.title.size = 10
+          )
+dev.off()
+```
+
+### Plot LD among all contigs, same order as Figure 1
+
+```{r}
+LD.df <- read.table("../data/large_files/pine_super_outlier_LD_p4_all_genemeans.txt", header=TRUE)
+head(LD.df)
+
+head(topcan)
+
+ind <- which(LD.df$tcontig1 %in% topcan$gtcontig & LD.df$tcontig2 %in% topcan$gtcontig)
+length(ind)
+
+head(LD.df[ind,])
+
+mergcols <- c("gtcontig", "NewContigIDMod", "cluster", "group.x", "subMod", "group_subMod")
+
+LD2 <- merge(LD.df[ind,], topcan[,mergcols], by.x="tcontig2", by.y="gtcontig")
+
+head(LD2)
+
+names(LD2)[c(4,5)] <- paste(names(LD2)[c(4:8)], ".2", sep="")
+
+head(LD2)
+
+LD3 <- merge(LD2,  topcan[,mergcols], by.x="tcontig1", by.y="gtcontig")
+
+LD3 <- LD3[order(LD3$NewContigIDMod, LD3$NewContigIDMod.2),]
+
+head(LD3)
+
+max(LD3$NewContigIDMod)*max(LD3$NewContigIDMod)
+dim(LD3)
+# perfect match up!
+
+LD3mat <- matrix(LD3$r2, ncol=108)
+
+  rownames(LD3mat) <- 1:108
+  colnames(LD3mat) <- 1:108
+  head(LD3mat)
+  min(LD3mat)
+  max(LD3mat)
+  
+  
+png("../results/LD.png", width=6, height=5, units = "in", res=400)
+  superheat(LD3mat,
+          row.dendrogram = FALSE,
+          col.dendrogram = FALSE,
+          pretty.order.rows = FALSE,
+          pretty.order.cols = FALSE,
+          #heat.col.scheme = "grey",
+          heat.pal = two.colors(start="white", end = "black",middle="grey20",  n=100),
+          heat.pal.values = seq(0,1, by=0.01),
+          left.label.text.size = 0.5,
+          bottom.label.text.size = 0.5,
+          bottom.label.size = 0.075,
+          left.label.size = 0.075,
+          left.label.col = topcan$module_col,
+          bottom.label.col = topcan$module_col,
+          bottom.label.text.angle = 90,
+          force.bottom.label = TRUE,
+          force.left.label = TRUE,
+          column.title = "Correlation in allele frequencies",
+          column.title.size = 4
+          )
+dev.off()
+
+```
+
+### Combine Recomb and LD heatmaps
+
+```{r}
+head(recom_mat_ordered)
+re_sub <- rownames(recom_mat_ordered)
+
+LD_sub <- LD3mat[as.numeric(re_sub), as.numeric(re_sub)]
+
+head(LD_sub)
+upper.tri(LD_sub)
+
+LD_REmat <- matrix(NA, nrow(LD_sub), ncol(LD_sub))
+
+ldpart <- LD_sub[upper.tri(LD_sub)]
+ldpart <- (0.7-ldpart)*0.5/0.7
+hist(ldpart)
+LD_REmat[upper.tri(LD_REmat)] <- ldpart
+
+#need to scale LD and recombination on the same scale for plotting
+recompart <- recom_mat_ordered[lower.tri(recom_mat_ordered)]#(0.5-recom_mat_ordered[lower.tri(recom_mat_ordered)])*1/0.5
+hist(recompart)
+
+LD_REmat[lower.tri(LD_REmat)] <- recompart
+
+diag(LD_REmat) <- 0
+
+head(LD_REmat)
+rownames(LD_REmat) <- rownames(recom_mat_ordered)
+colnames(LD_REmat) <- rownames(recom_mat_ordered)
+ind <- match(rownames(recom_mat_ordered), as.character(topcan_recom$NewContigIDMod))
+ind
+
+
+  
+png("../results/LDandRecomb.png", width=6, height=5, units = "in", res=400)
+superheat(LD_REmat,
+          row.dendrogram = FALSE,
+          col.dendrogram = FALSE,
+          pretty.order.rows = FALSE,
+          pretty.order.cols = FALSE,
+          #heat.col.scheme = "grey",
+          heat.pal = two.colors(start="black", end = "white", middle="grey60",  n=200),
+          heat.pal.values = seq(0,1, length.out=200),
+          left.label.text.size = 1.5,
+          bottom.label.text.size =1.5,
+          bottom.label.size = 0.075,
+          left.label.size = 0.075,
+          left.label.col = topcan_recom$module_col,
+          bottom.label.col = topcan_recom$module_col,
+          bottom.label.text.angle = 90,
+          force.bottom.label = TRUE,
+          force.left.label = TRUE,
+          row.title = "Recombination rates (upper diag)",
+          column.title = "Correlation in allele frequencies (lower diag)",
+          heat.na.col = "black",
+          legend = FALSE
+          )
+
+dev.off()
+
+```
+  
+  
+
+
+```{r, recombination map resorted by clustering}
+ #plot recombination heatmap, clustered by recombination rates
+png("../results/RecombHeatmapClusterd.png", width=12, height=12, units="in", res = 300)
+superheat(recom_mat_ordered,
+          row.dendrogram = FALSE,
+          col.dendrogram = FALSE,
+          pretty.order.rows = TRUE,
+          pretty.order.cols = TRUE,
+          heat.pal = two.colors(start="black", end = "white", n=20),
+          left.label.text.size = 4,
+          bottom.label.text.size = 4,
+          bottom.label.size = 0.2,
+          left.label.size = 0.1,
+          left.label.col = topcan_recom$module_col,
+          bottom.label.col = topcan_recom$module_col,
+          bottom.label.text.angle = 90
+          )
+dev.off()
+
+```  

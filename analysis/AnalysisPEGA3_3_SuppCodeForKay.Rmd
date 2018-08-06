@@ -1,0 +1,77 @@
+---
+title: "Untitled"
+author: "Katie Lotterhos"
+date: "1/7/2018"
+output: html_document
+---
+
+Extra analysis: make galaxy plots for Kay's paper
+
+This code should run at the end of "Analysis PEGA_3.1.Rmd"
+
+One thought might be to show the results for winter cold injury (and height season 2?) since these are the ones with the most contrasting effects of population structure. 
+```{r, eval=FALSE, echo=FALSE}
+pdf("../results/Fig4Kay.pdf", width=6, height=10)
+par(mfcol=c(3,2), oma=c(0,0,2,0), mar=c(4,5,1.5,0.5), cex.lab=1.5)
+## Winter cold injury
+plot2Dcov(x=results_pine3$Winter_cold_injury_p_raw_rho, 
+          y= results_pine3$Winter_cold_injury_snp_effect, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Winter_cold_injury_p_raw_rho, 
+                   results_pine3$Winter_cold_injury_snp_effect, use="pairwise"),
+          xlim=c(-0.6,0.6), ylim=c(-0.8,0.8),
+          xlab="Uncorrected correlation",
+          ylab="GCTA effect size"
+          )
+plot2Dcov(x=results_pine3$Winter_cold_injury_p_raw_rho,
+          results_pine3$Winter_cold_injury_rhoave_BAYENV, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Winter_cold_injury_p_raw_rho, 
+                   results_pine3$Winter_cold_injury_rhoave_BAYENV, use="pairwise"),
+          xlim=c(-0.6,0.6), ylim=c(-0.3,0.3),
+          xlab="Uncorrected correlation",
+          ylab="Covariance-corrected correlation"
+          )
+plot2Dcov(x=results_pine3$Winter_cold_injury_snp_effect,
+          results_pine3$Winter_cold_injury_rhoave_BAYENV, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Winter_cold_injury_snp_effect, 
+                   results_pine3$Winter_cold_injury_rhoave_BAYENV, use="pairwise"),
+          xlim=c(-1,1), ylim=c(-0.3,0.3),
+          xlab="GCTA effect size",
+          ylab="Covariance-corrected correlation"
+          )
+          
+## Winter cold injury
+plot2Dcov(x=results_pine3$Height_season_2_p_raw_rho, 
+          y= results_pine3$Height_season_2_snp_effect, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Height_season_2_p_raw_rho, 
+                   results_pine3$Height_season_2_snp_effect, use="pairwise"),
+          xlim=c(-0.6,0.6), ylim=c(-0.8,0.8),
+          xlab="Uncorrected correlation",
+          ylab="GCTA effect size"
+          )
+plot2Dcov(x=results_pine3$Height_season_2_p_raw_rho,
+          results_pine3$Height_season_2_rhoave_BAYENV, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Height_season_2_p_raw_rho, 
+                   results_pine3$Height_season_2_rhoave_BAYENV, use="pairwise"),
+          xlim=c(-0.6,0.6), ylim=c(-0.3,0.3),
+          xlab="Uncorrected correlation",
+          ylab="Covariance-corrected correlation"
+          )
+plot2Dcov(x=results_pine3$Height_season_2_snp_effect,
+          results_pine3$Height_season_2_rhoave_BAYENV, 
+          nbin=100, PElab = c("x", "y"), 
+          PE = cor(results_pine3$Height_season_2_snp_effect, 
+                   results_pine3$Height_season_2_rhoave_BAYENV, use="pairwise"),
+          xlim=c(-1,1), ylim=c(-0.3,0.3),
+          xlab="GCTA effect size",
+          ylab="Covariance-corrected correlation"
+          )
+
+mtext("Winter cold injury", adj=0.2, side=3, outer=TRUE, line=-1)
+mtext("Height season 2", adj=0.85, side=3, outer=TRUE, line=-1)
+dev.off()
+```

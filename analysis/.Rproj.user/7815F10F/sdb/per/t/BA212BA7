@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\n\n### Plotting function plot_2Dcov \n\n# Plots a genome-wide distribution for two variables in greyscale\n### The number of bins is given by nbin\n### The 95% prediction ellipse for all data is plotted in black\n\n# Plots up to 4 groups of SNPs in different colors (orange, blue, green, or golden)\n### The 95% prediction ellipse for each group is plotted in the respective color\n\n\ngalaxyplot <- function(x,y, xlab, ylab, xlim=c(-0.3,0.3), ylim=c(-0.3,0.3), \n                      nbin, \n                     x_sub = NULL, y_sub=NULL,\n                     sub_outlinecolor = NULL,\n                     sub_bgcolor=NULL,\n                     PE=0, PElab = c(\"V1\", \"V2\"), plotPE=TRUE, plot0=TRUE){\n\n  data1 <- cbind(x, y)\n  data1b <- data1[complete.cases(data1),]\n  if(length(xlim)==0){\n    xlim_up <- max(x, na.rm=TRUE)+0.15*max(x, na.rm=TRUE)\n    xlim_lower <- min(x, na.rm=TRUE)-0.15*max(x, na.rm=TRUE)\n  }else{\n    xlim_lower <- xlim[1]; xlim_up <- xlim[2]\n  }\n  if(length(ylim)==0){\n    ylim_up <- max(y, na.rm=TRUE)+0.15*max(y, na.rm=TRUE)\n    ylim_lower <- min(y, na.rm=TRUE)-0.15*max(y, na.rm=TRUE)\n  }else{\n    ylim_lower <- ylim[1]; ylim_up <- ylim[2]\n  }\n        binned <- bin2(data1b,\n                 matrix(c(xlim_lower,xlim_up,ylim_lower,ylim_up), 2,2, byrow=TRUE),\n                 nbin=c(nbin,nbin))\n    binned$nc[binned$nc==0]=NA\n\n    ### Start plotting \n    xlocs <- seq(xlim_lower,xlim_up,length.out = nbin)\n    ylocs <- seq(ylim_lower,ylim_up, length.out=nbin)\n    image(xlocs,  ylocs,\n               z=matrix(0, nrow=length(ylocs), ncol=length(xlocs)),\n          col=(rgb(0,0,0,0)),\n             xlab=xlab, ylab=ylab, add=FALSE, bty=\"n\")#, \n             #xaxt=\"n\", yaxt=\"n\", bty=\"n\")\n    \n    if(PE >= 0.1){\n      polygon(c(0,1,1,0,0), c(0,0,1,1,0),col=rgb(0,0,0,0.05))\n      polygon(c(0,-1,-1,0,0), c(0,0,-1,-1,0), col=rgb(0,0,0,0.05))\n      }\n    if(PE <= -0.1){\n      polygon(c(0,-1,-1,0,0), c(0,0,1,1,0),col=rgb(0,0,0,0.05))\n      polygon(c(0,1,1,0,0), c(0,0,-1,-1,0),col=rgb(0,0,0,0.05))\n    }\n    if (plot0){\n      abline(h=0) #add x axis\n      abline(v=0) # add y axis\n    }\n    \n    image(seq(xlim_lower,xlim_up,length.out = nbin), \n               seq(ylim_lower,ylim_up, length.out=nbin),\n               binned$nc,\n             xlab=xlab, ylab=ylab, add=TRUE, \n             col=grey.colors(75, 0.8,0.1))\n             #xaxt=\"l\", yaxt=\"l\", bty=\"n\")\n    \n    ### Function for plotting covariance matrix\n    plot_mycov <- function(data1, CI = 0.95, color=\"grey30\", ...){\n      # data1 is a data frame with x, y in columns\n      C.ls2 <- cov(data1[complete.cases(data1),])\n      m.ls2 <- colMeans(data1[complete.cases(data1),])\n      d2.95 <- qchisq(CI, df = 2)\n      #d2.95 <- qnorm(0.99)\n      lines(ellipsoidPoints(C.ls2, d2.95, loc=m.ls2), lwd=2, col=color, ...)\n    }\n    \n    \n    ### Make function for plotting sub points\n    plot_mycov_sub <- function(x_sub, y_sub, outlinecolor, bgcolor, mypch){\n      if(length(x_sub)>0){\n      points(x_sub, y_sub, cex=1, col=outlinecolor, bg=bgcolor, pch=mypch)\n      }\n    }\n    \n    ### Make cov plot for x_sub_orange, y_sub_orange\n        plot_mycov_sub(x_sub, y_sub, outlinecolor=sub_outlinecolor, bgcolor=sub_bgcolor, mypch=21)\n\n    ### Make cov plot for all data\n    plot_mycov(data1)\n    \n    if(plotPE){\n      t <- bquote(~rho ~ \"(\" ~ .(PElab[1]) ~ \",\" ~ .(PElab[2]) ~ \") =\")\n      text(xlim_up*0.5,ylim_lower*0.85, t, cex=1.2)\n      text(xlim_up*0.5,ylim_lower*0.95, round(PE,2), cex=1.2)\n    }\n} # end galaxy",
+    "created" : 1501806348539.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3780158084",
+    "id" : "BA212BA7",
+    "lastKnownWriteTime" : 1501806425,
+    "last_content_update" : 1501806425210,
+    "path" : "~/Desktop/CurrResearch/1-AdaptreeData/201509_PEGA/20170701Submit/dryad/analysis/galaxy2.R",
+    "project_path" : "galaxy2.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

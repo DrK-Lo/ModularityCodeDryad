@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "par(mfrow=c(1,1))\nx <- -10:10\ny <- -10:10\nmat <- matrix(NA, length(x), length(y))\n\nfor (i in 1:length(x)){\n  for (j in 1:length(y)){\n    mat[i,j] = abs(y[j]) - abs(x[i]) \n  }\n}\n\nimage.plot(x, y, mat)\n\neval(parse(text=c(\"5+5\", \"1+1\")))\n",
+    "created" : 1502156705878.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1006756226",
+    "id" : "D16E02E1",
+    "lastKnownWriteTime" : 1502283814,
+    "last_content_update" : 1502283814513,
+    "path" : "~/Dropbox/katie/2017 Gene Expression and Sequence Evolution/geneExpression.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
