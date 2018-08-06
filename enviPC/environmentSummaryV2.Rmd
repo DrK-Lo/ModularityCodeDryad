@@ -1,0 +1,182 @@
+---
+title: "Pine Environment Summary"
+author: "Katie Lotterhos"
+date: "April 24, 2015"
+output: html_document
+---
+
+This is a summary of the environmental data that was used for the bayenv2 analysis for the pine data.
+
+
+```{r, echo=FALSE}
+#install.packages("factoextra")
+library(factoextra)
+```
+
+setwd("../enviPC")
+### Principal components of the environmental variables used in this study
+
+
+```{r}
+env <- read.table("var_out_pine_all_COMBINED.table.contig_flt10.bayenv.envi2")
+#head(env)
+
+in2 <- t (env)
+nam1 <- read.table("../enviPC/enviNamesAllAnalyses.txt")
+dim(in2)
+colnames(in2) <- nam1$V1
+in3 <- prcomp (in2, scale. = T)
+str(in3)
+scores <- t (in3$x)
+
+barplot(in3$sdev, ylab="Standard Deviation", names.arg = 1:22, xlab="PC axis")
+
+# Eigenvalues
+eig <- (in3$sdev)^2
+# Variance in Percentage
+variance <- eig*100/sum(eig)
+# Cumulative variances
+cumvar <- cumsum(variance)
+perVar <- data.frame(eig = eig, variance = variance,
+                     cumvariance = cumvar)
+perVar
+  # first 3 explain 80% of variance
+```
+
+### Correlation of variables onto Prin Comp
+```{r}
+pa <- fviz_pca_var(in3, )
+#fviz_pca_var(in3, axes = c(2,3))
+pb <- fviz_pca_var(in3, axes = c(1,3))
+
+par(mfrow=c(2,1))
+p1 = fviz_pca_var(in3, col.var="contrib")+
+scale_color_gradient2(low="lightgrey", mid="grey", 
+      high="blue", midpoint=4) + theme_minimal()
+
+p2 <- fviz_pca_var(in3, col.var="contrib", axes=c(1,3))+
+scale_color_gradient2(low="lightgrey", mid="grey", 
+      high="blue", midpoint=4) + theme_minimal()
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+multiplot(pa, pb, cols=1)
+
+multiplot(p1, p2, cols=1)
+  # colored by their average contribution to the variance in the two PC axes pictured
+
+pdf("../results/PCloadings.pdf", width=5, height=8.5)
+  multiplot(p1, p2, cols=1)
+dev.off()
+
+# with colors
+# Helper function : 
+# Correlation between variables and principal components
+var_cor_func <- function(var.loadings, comp.sdev){
+  var.loadings*comp.sdev
+}
+
+# Variable correlation/coordinates
+  loadings <- in3$rotation
+  apply(abs(loadings), 2, max)
+    # maximum loading of a variable in first 3 PC axes is < 0.38
+  loadings[,1:5]
+
+sdev <- in3$sdev
+sdev
+var.coord <- var.cor <- t(apply(loadings, 1, var_cor_func, sdev))
+head(var.coord[, 1:4])
+
+var.cos2 <- var.coord^2
+head(var.cos2[, 1:4])
+comp.cos2 <- apply(var.cos2, 2, sum)
+#The contribution of a variable to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component)
+contrib <- function(var.cos2, comp.cos2){var.cos2*100/comp.cos2}
+var.contrib <- t(apply(var.cos2,1, contrib, comp.cos2))
+colSums(var.contrib)
+var.contrib[, 1:4]
+
+par(mfrow=c(1,1), mar=c(4,4,1,1))
+plot(loadings[,1:4], var.contrib[, 1:4])
+# maximum contribution to any one variable in PC1 is < 10%, in PC2 is < 15%, and in PC3 is < 15%
+```
+
+Contribution to variance of an individual environment $i$ to PC axis $j$ is:
+
+$\frac{(l_{ij}\sigma_j)^2}{\sum_i (l_{ij}\sigma_j)^2}$
+
+where l_i is the loading of environment i onto PC axis j, $\sigma_j$ is the standard deviation of PC axis j. 
+
+#### Distribution of environments along PC axes
+```{r}
+loadings <- in3$rotation
+dim(loadings)
+
+```
+
+#### Table and graphs of loadings for first 5 PC axes
+```{r}
+data.frame(as.character(nam1$V1), loadings[,1:5])
+```
+
+Note that the y-axis in the following graphs are meaningless, environments are just stacked for easy readability.
+
+```{r}
+  par(mfrow=c(3,1), mar=c(4,0,0,0))
+  makePCplot <- function(pc){
+    plot(loadings[,pc], (rank(loadings[,pc])), bty="l", yaxt="n", ylab="", xlab=paste("PC", pc), col=0, xlim=c(min(loadings[,pc])*1.1, max(loadings[,pc])*1.1))
+    text(loadings[,pc], (rank(loadings[,pc])), as.character(nam1$V1))
+  }
+  for (i in 1:3){
+  makePCplot(i)
+  }
+```
+
+### Information about this R session
+```{r}
+sessionInfo()
+```
