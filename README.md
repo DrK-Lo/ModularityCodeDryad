@@ -1,36 +1,37 @@
 README
 
 This repository contains all the data and scripts needed to reproduce the
-co-association network analysis.
+co-association network analysis for the paper: "Modularity of genes involved in local adaptation to climate despite physical linkage" published on bioarxiv https://www.biorxiv.org/content/early/2018/01/26/202481 and in review at Genome Biology.
 
-############################
-Steps to run empirical analyses:
-############################
+Note that there are some large data files that could not be uploaded to GitHub, and are stored in the Dryad Respository (link to be provided upon acceptance of manuscript for publication). Note also that there to reproduce the results you will need a folder for "results", which is ignored by git.
+
+### Steps to run empirical analyses:
+
 
 1) open analysis/dryad.Rproj
-	This will set your working directory
+	- This will set your working directory
 
 2) Run AnalysisPEGA_3_dryad.Rmd
-	Contains all code to reproduce the co-association network analysis
+	- Contains all code to reproduce the co-association network analysis
 
 3) Run AnalysisPEGA_4_recombin_dryad.Rmd
-	Creates gametic disequilibrium and recombination rate plots.
-	Note that this must be run after #2
+	- Creates gametic disequilibrium and recombination rate plots.
+	- Note that this must be run after #2
 
 Other scripts:
 
-	galaxy2.R function for galaxy biplots
+* galaxy2.R function for galaxy biplots
 
-	myFunDist.R contains functions for making co-association networks from correlation data
+* myFunDist.R contains functions for making co-association networks from correlation data
 
-	plot2Dcov.R another function for making galaxy biplots
+* plot2Dcov.R another function for making galaxy biplots
 
-############################
-Data:
-############################
 
-large_files/Pine_Alpha_AveRho_WithSuperLogical_andAncestralFlip.RData
-	dataframe containing all association analyses (only a subset used for this study)
+### Descriptions of Data:
+
+* large_files/Pine_Alpha_AveRho_WithSuperLogical_andAncestralFlip.RData
+	* dataframe containing all association analyses (only a subset used for this study)
+	
 large_files/Pine_Alpha_AveRho_WithSuperLogical_andAncestralFlip.metadata
 	metadata for corresponding file
 
@@ -60,9 +61,9 @@ tair_pine_clusterall
 tair_pine_clusterall.metadata
 	metadata for the corresponding file
 
-############################
-Steps to run analyses of simulations:
-############################
+
+### Steps to run analyses of simulations:
+
 Change directory to the /simulations folder.
 
 Galaxy_Plots_on_AdaptreeEnvi_1R_aOverlayEnvi.Rmd 
