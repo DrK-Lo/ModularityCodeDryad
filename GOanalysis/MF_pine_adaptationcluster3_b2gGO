@@ -1,0 +1,13 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"3" "GO:0043169" "cation binding" 1586 4 1.54 "0.080" 0.624
+"5" "GO:0003676" "nucleic acid binding" 1628 3 1.58 "0.104" 0.624
+"15" "GO:0043167" "ion binding" 2978 4 2.89 "0.396" 0.9756
+"16" "GO:0008270" "zinc ion binding" 743 3 0.72 "0.435" 0.9756
+"18" "GO:0005488" "binding" 6590 7 6.4 "0.493" 0.9756
+"19" "GO:0005515" "protein binding" 2405 3 2.34 "0.502" 0.9756
+"21" "GO:0046914" "transition metal ion binding" 980 3 0.95 "0.582" 0.9756
+"23" "GO:0046872" "metal ion binding" 1483 4 1.44 "0.764" 0.9756
+"25" "GO:1901363" "heterocyclic compound binding" 3457 3 3.36 "0.812" 0.9756
+"26" "GO:0097159" "organic cyclic compound binding" 3461 3 3.36 "0.813" 0.9756
+"28" "GO:0003824" "catalytic activity" 5339 3 5.19 "0.965" 1
+"30" "GO:0003674" "molecular_function" 9265 9 9 "1.000" 1

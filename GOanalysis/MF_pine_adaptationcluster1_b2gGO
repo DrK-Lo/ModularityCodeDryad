@@ -1,0 +1,19 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"5" "GO:0016491" "oxidoreductase activity" 1038 3 1.12 "0.054" 0.972
+"12" "GO:0005488" "binding" 6590 9 7.11 "0.168" 0.982588235294118
+"18" "GO:0016787" "hydrolase activity" 1903 3 2.05 "0.245" 0.982588235294118
+"19" "GO:0046914" "transition metal ion binding" 980 3 1.06 "0.288" 0.982588235294118
+"26" "GO:0043167" "ion binding" 2978 5 3.21 "0.383" 0.982588235294118
+"30" "GO:0003676" "nucleic acid binding" 1628 3 1.76 "0.445" 0.982588235294118
+"34" "GO:1901363" "heterocyclic compound binding" 3457 5 3.73 "0.560" 0.982588235294118
+"35" "GO:0043169" "cation binding" 1586 3 1.71 "0.561" 0.982588235294118
+"36" "GO:0097159" "organic cyclic compound binding" 3461 5 3.74 "0.562" 0.982588235294118
+"37" "GO:0036094" "small molecule binding" 2045 3 2.21 "0.565" 0.982588235294118
+"41" "GO:1901265" "nucleoside phosphate binding" 1995 3 2.15 "0.641" 0.982588235294118
+"52" "GO:0003824" "catalytic activity" 5339 5 5.76 "0.791" 0.982588235294118
+"54" "GO:0046872" "metal ion binding" 1483 3 1.6 "0.817" 0.982588235294118
+"57" "GO:0008270" "zinc ion binding" 743 2 0.8 "0.853" 0.982588235294118
+"58" "GO:0043168" "anion binding" 1614 2 1.74 "0.861" 0.982588235294118
+"64" "GO:0005515" "protein binding" 2405 2 2.6 "0.896" 0.982588235294118
+"66" "GO:0000166" "nucleotide binding" 1995 3 2.15 "0.928" 0.982588235294118
+"78" "GO:0003674" "molecular_function" 9265 10 10 "1.000" 1

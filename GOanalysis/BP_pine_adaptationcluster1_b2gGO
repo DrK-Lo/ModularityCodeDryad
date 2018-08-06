@@ -1,0 +1,34 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"8" "GO:0044262" "cellular carbohydrate metabolic process" 342 2 0.36 "0.0319" 0.57915
+"9" "GO:0009719" "response to endogenous stimulus" 423 2 0.45 "0.0400" 0.57915
+"15" "GO:0032502" "developmental process" 973 3 1.04 "0.0734" 0.57915
+"19" "GO:0055114" "oxidation-reduction process" 881 3 0.94 "0.0839" 0.57915
+"21" "GO:0005975" "carbohydrate metabolic process" 659 2 0.7 "0.0994" 0.57915
+"22" "GO:0044767" "single-organism developmental process" 952 3 1.01 "0.1053" 0.57915
+"27" "GO:0044723" "single-organism carbohydrate metabolic p..." 516 2 0.55 "0.1347" 0.635014285714286
+"32" "GO:0001101" "response to acid chemical" 356 2 0.38 "0.1619" 0.640566666666667
+"33" "GO:0042221" "response to chemical" 884 2 0.94 "0.1747" 0.640566666666667
+"38" "GO:0016043" "cellular component organization" 709 2 0.75 "0.2152" 0.666325
+"44" "GO:1901700" "response to oxygen-containing compound" 427 2 0.45 "0.2330" 0.666325
+"45" "GO:0009653" "anatomical structure morphogenesis" 312 2 0.33 "0.2423" 0.666325
+"52" "GO:0071840" "cellular component organization or bioge..." 951 2 1.01 "0.2685" 0.6754
+"53" "GO:0065007" "biological regulation" 1787 3 1.9 "0.2913" 0.6754
+"56" "GO:0010033" "response to organic substance" 490 2 0.52 "0.3070" 0.6754
+"61" "GO:0044699" "single-organism process" 4629 6 4.93 "0.3495" 0.682916666666667
+"65" "GO:0044710" "single-organism metabolic process" 2932 4 3.12 "0.3551" 0.682916666666667
+"68" "GO:0009987" "cellular process" 5653 7 6.02 "0.3725" 0.682916666666667
+"98" "GO:0050789" "regulation of biological process" 1642 2 1.75 "0.5498" 0.872177777777778
+"102" "GO:0050794" "regulation of cellular process" 1464 2 1.56 "0.5715" 0.872177777777778
+"112" "GO:0044249" "cellular biosynthetic process" 2051 2 2.18 "0.6311" 0.872177777777778
+"115" "GO:0043170" "macromolecule metabolic process" 3211 3 3.42 "0.6416" 0.872177777777778
+"117" "GO:0048856" "anatomical structure development" 841 3 0.9 "0.6454" 0.872177777777778
+"119" "GO:0009058" "biosynthetic process" 2261 2 2.41 "0.6762" 0.872177777777778
+"121" "GO:0044238" "primary metabolic process" 4297 4 4.57 "0.6847" 0.872177777777778
+"125" "GO:0050896" "response to stimulus" 2114 2 2.25 "0.7061" 0.872177777777778
+"128" "GO:0009725" "response to hormone" 414 2 0.44 "0.7136" 0.872177777777778
+"135" "GO:0044763" "single-organism cellular process" 3560 4 3.79 "0.7483" 0.881925
+"141" "GO:0071704" "organic substance metabolic process" 4625 4 4.92 "0.8047" 0.915693103448276
+"146" "GO:0008152" "metabolic process" 5547 5 5.9 "0.8692" 0.946887096774193
+"147" "GO:0044237" "cellular metabolic process" 4333 4 4.61 "0.8895" 0.946887096774193
+"152" "GO:0044260" "cellular macromolecule metabolic process" 2946 2 3.14 "0.9434" 0.97288125
+"164" "GO:0008150" "biological_process" 7515 8 8 "1.0000" 1

@@ -1,0 +1,254 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"1" "GO:0009851" "auxin biosynthetic process" 13 2 0.07 "0.0013" 0.26565
+"2" "GO:0043543" "protein acylation" 27 2 0.15 "0.0021" 0.26565
+"3" "GO:1902221" "erythrose 4-phosphate/phosphoenolpyruvat..." 78 3 0.42 "0.0035" 0.295166666666667
+"4" "GO:0042446" "hormone biosynthetic process" 27 2 0.15 "0.0058" 0.3036
+"5" "GO:0006570" "tyrosine metabolic process" 96 3 0.52 "0.0065" 0.3036
+"6" "GO:0009850" "auxin metabolic process" 25 2 0.14 "0.0072" 0.3036
+"8" "GO:0044282" "small molecule catabolic process" 106 3 0.58 "0.0142" 0.513228571428571
+"11" "GO:0007017" "microtubule-based process" 87 3 0.47 "0.0163" 0.5154875
+"14" "GO:0018193" "peptidyl-amino acid modification" 85 2 0.46 "0.0207" 0.535516666666667
+"15" "GO:0055085" "transmembrane transport" 389 6 2.11 "0.0212" 0.535516666666667
+"17" "GO:0009073" "aromatic amino acid family biosynthetic ..." 55 2 0.3 "0.0253" 0.535516666666667
+"18" "GO:0042435" "indole-containing compound biosynthetic ..." 68 2 0.37 "0.0254" 0.535516666666667
+"20" "GO:0009309" "amine biosynthetic process" 73 2 0.4 "0.0325" 0.565033333333333
+"21" "GO:0055114" "oxidation-reduction process" 931 10 5.06 "0.0329" 0.565033333333333
+"22" "GO:0009072" "aromatic amino acid family metabolic pro..." 141 3 0.77 "0.0351" 0.565033333333333
+"23" "GO:0016570" "histone modification" 54 2 0.29 "0.0358" 0.565033333333333
+"24" "GO:0006928" "cellular component movement" 50 2 0.27 "0.0385" 0.565033333333333
+"25" "GO:0042445" "hormone metabolic process" 64 2 0.35 "0.0402" 0.565033333333333
+"26" "GO:2000241" "regulation of reproductive process" 81 2 0.44 "0.0498" 0.648945
+"27" "GO:0080167" "response to karrikin" 43 2 0.23 "0.0513" 0.648945
+"28" "GO:0042967" "acyl-carrier-protein biosynthetic proces..." 114 2 0.62 "0.0552" 0.6624
+"29" "GO:0046395" "carboxylic acid catabolic process" 97 2 0.53 "0.0576" 0.6624
+"33" "GO:0009063" "cellular amino acid catabolic process" 81 2 0.44 "0.0661" 0.685124
+"34" "GO:0006568" "tryptophan metabolic process" 90 2 0.49 "0.0670" 0.685124
+"35" "GO:0016054" "organic acid catabolic process" 97 2 0.53 "0.0677" 0.685124
+"37" "GO:0000162" "tryptophan biosynthetic process" 53 2 0.29 "0.0744" 0.699703125
+"40" "GO:1901565" "organonitrogen compound catabolic proces..." 332 4 1.8 "0.0832" 0.699703125
+"41" "GO:0070271" "protein complex biogenesis" 131 2 0.71 "0.0835" 0.699703125
+"42" "GO:0065008" "regulation of biological quality" 292 4 1.59 "0.0840" 0.699703125
+"43" "GO:0006996" "organelle organization" 391 5 2.13 "0.0874" 0.699703125
+"45" "GO:0016043" "cellular component organization" 687 8 3.73 "0.0885" 0.699703125
+"46" "GO:0009987" "cellular process" 5678 35 30.86 "0.0885" 0.699703125
+"49" "GO:0009628" "response to abiotic stimulus" 669 6 3.64 "0.0923" 0.707633333333333
+"53" "GO:0044712" "single-organism catabolic process" 573 6 3.11 "0.1002" 0.7153575
+"54" "GO:0044699" "single-organism process" 4707 30 25.58 "0.1010" 0.7153575
+"56" "GO:1902589" "single-organism organelle organization" 180 3 0.98 "0.1042" 0.7153575
+"58" "GO:0018205" "peptidyl-lysine modification" 28 2 0.15 "0.1059" 0.7153575
+"59" "GO:0006396" "RNA processing" 234 3 1.27 "0.1097" 0.7153575
+"60" "GO:0022900" "electron transport chain" 86 2 0.47 "0.1107" 0.7153575
+"62" "GO:0009793" "embryo development ending in seed dorman..." 174 3 0.95 "0.1131" 0.7153575
+"64" "GO:0042430" "indole-containing compound metabolic pro..." 116 2 0.63 "0.1163" 0.717656097560976
+"66" "GO:0008652" "cellular amino acid biosynthetic process" 191 2 1.04 "0.1236" 0.729581395348837
+"67" "GO:0071840" "cellular component organization or bioge..." 929 8 5.05 "0.1240" 0.729581395348837
+"69" "GO:0051239" "regulation of multicellular organismal p..." 155 2 0.84 "0.1301" 0.748075
+"71" "GO:1901360" "organic cyclic compound metabolic proces..." 2305 14 12.53 "0.1331" 0.748317777777778
+"74" "GO:1901575" "organic substance catabolic process" 776 6 4.22 "0.1440" 0.759401587301587
+"75" "GO:0016573" "histone acetylation" 21 2 0.11 "0.1468" 0.759401587301587
+"76" "GO:0048580" "regulation of post-embryonic development" 97 2 0.53 "0.1478" 0.759401587301587
+"77" "GO:0032502" "developmental process" 970 8 5.27 "0.1485" 0.759401587301587
+"78" "GO:0009719" "response to endogenous stimulus" 427 4 2.32 "0.1590" 0.759401587301587
+"79" "GO:0009166" "nucleotide catabolic process" 185 2 1.01 "0.1598" 0.759401587301587
+"80" "GO:0048316" "seed development" 225 3 1.22 "0.1626" 0.759401587301587
+"81" "GO:0006558" "L-phenylalanine metabolic process" 78 3 0.42 "0.1664" 0.759401587301587
+"82" "GO:1901607" "alpha-amino acid biosynthetic process" 156 2 0.85 "0.1684" 0.759401587301587
+"84" "GO:0016070" "RNA metabolic process" 1026 6 5.58 "0.1764" 0.759401587301587
+"85" "GO:0055067" "monovalent inorganic cation homeostasis" 26 2 0.14 "0.1776" 0.759401587301587
+"86" "GO:0006091" "generation of precursor metabolites and ..." 281 3 1.53 "0.1776" 0.759401587301587
+"87" "GO:0019693" "ribose phosphate metabolic process" 302 2 1.64 "0.1806" 0.759401587301587
+"91" "GO:0046219" "indolalkylamine biosynthetic process" 53 2 0.29 "0.1837" 0.759401587301587
+"95" "GO:0046039" "GTP metabolic process" 128 2 0.7 "0.1862" 0.759401587301587
+"97" "GO:0009308" "amine metabolic process" 155 2 0.84 "0.1880" 0.759401587301587
+"98" "GO:0006571" "tyrosine biosynthetic process" 55 2 0.3 "0.1889" 0.759401587301587
+"99" "GO:0044106" "cellular amine metabolic process" 136 2 0.74 "0.1891" 0.759401587301587
+"102" "GO:0019439" "aromatic compound catabolic process" 270 3 1.47 "0.1965" 0.7767890625
+"108" "GO:0051258" "protein polymerization" 33 2 0.18 "0.2186" 0.8426
+"109" "GO:1901068" "guanosine-containing compound metabolic ..." 141 2 0.77 "0.2215" 0.8426
+"111" "GO:0009056" "catabolic process" 826 6 4.49 "0.2248" 0.8426
+"114" "GO:1902223" "erythrose 4-phosphate/phosphoenolpyruvat..." 55 2 0.3 "0.2283" 0.8426
+"115" "GO:0050793" "regulation of developmental process" 184 2 1 "0.2298" 0.8426
+"118" "GO:0032501" "multicellular organismal process" 931 7 5.06 "0.2366" 0.847728169014085
+"119" "GO:0043623" "cellular protein complex assembly" 70 2 0.38 "0.2379" 0.847728169014085
+"124" "GO:0016052" "carbohydrate catabolic process" 172 2 0.93 "0.2470" 0.859160273972603
+"125" "GO:0044767" "single-organism developmental process" 953 8 5.18 "0.2479" 0.859160273972603
+"129" "GO:0009790" "embryo development" 216 3 1.17 "0.2566" 0.875513157894737
+"130" "GO:0044724" "single-organism carbohydrate catabolic p..." 136 2 0.74 "0.2608" 0.875513157894737
+"131" "GO:1901361" "organic cyclic compound catabolic proces..." 281 3 1.53 "0.2630" 0.875513157894737
+"139" "GO:0042221" "response to chemical" 888 6 4.83 "0.2787" 0.896885
+"142" "GO:0009261" "ribonucleotide catabolic process" 185 2 1.01 "0.2902" 0.896885
+"145" "GO:0048878" "chemical homeostasis" 88 2 0.48 "0.2972" 0.896885
+"149" "GO:0006725" "cellular aromatic compound metabolic pro..." 2169 13 11.79 "0.3117" 0.896885
+"151" "GO:0022414" "reproductive process" 520 4 2.83 "0.3123" 0.896885
+"153" "GO:0042401" "cellular biogenic amine biosynthetic pro..." 73 2 0.4 "0.3134" 0.896885
+"154" "GO:0072521" "purine-containing compound metabolic pro..." 388 3 2.11 "0.3174" 0.896885
+"155" "GO:2000026" "regulation of multicellular organismal d..." 145 2 0.79 "0.3201" 0.896885
+"156" "GO:0046483" "heterocycle metabolic process" 2181 13 11.85 "0.3210" 0.896885
+"157" "GO:0034641" "cellular nitrogen compound metabolic pro..." 2193 13 11.92 "0.3215" 0.896885
+"159" "GO:0015672" "monovalent inorganic cation transport" 119 2 0.65 "0.3232" 0.896885
+"161" "GO:0006508" "proteolysis" 350 2 1.9 "0.3257" 0.896885
+"164" "GO:0009141" "nucleoside triphosphate metabolic proces..." 267 2 1.45 "0.3306" 0.896885
+"165" "GO:0006586" "indolalkylamine metabolic process" 90 2 0.49 "0.3313" 0.896885
+"170" "GO:0044707" "single-multicellular organism process" 906 7 4.92 "0.3521" 0.896885
+"171" "GO:0034655" "nucleobase-containing compound catabolic..." 214 2 1.16 "0.3532" 0.896885
+"173" "GO:0044710" "single-organism metabolic process" 3093 19 16.81 "0.3576" 0.896885
+"174" "GO:1901069" "guanosine-containing compound catabolic ..." 123 2 0.67 "0.3588" 0.896885
+"175" "GO:0016568" "chromatin modification" 66 2 0.36 "0.3644" 0.896885
+"177" "GO:0006325" "chromatin organization" 109 2 0.59 "0.3704" 0.896885
+"178" "GO:0006811" "ion transport" 444 4 2.41 "0.3708" 0.896885
+"179" "GO:0042454" "ribonucleoside catabolic process" 188 2 1.02 "0.3718" 0.896885
+"180" "GO:0006195" "purine nucleotide catabolic process" 185 2 1.01 "0.3720" 0.896885
+"182" "GO:0044248" "cellular catabolic process" 595 4 3.23 "0.3739" 0.896885
+"185" "GO:0009657" "plastid organization" 101 2 0.55 "0.3848" 0.896885
+"187" "GO:1901658" "glycosyl compound catabolic process" 201 2 1.09 "0.3860" 0.896885
+"188" "GO:0010817" "regulation of hormone levels" 94 2 0.51 "0.3870" 0.896885
+"189" "GO:0046130" "purine ribonucleoside catabolic process" 187 2 1.02 "0.3878" 0.896885
+"190" "GO:0006753" "nucleoside phosphate metabolic process" 464 2 2.52 "0.3880" 0.896885
+"192" "GO:0006152" "purine nucleoside catabolic process" 188 2 1.02 "0.3919" 0.896885
+"194" "GO:0009154" "purine ribonucleotide catabolic process" 185 2 1.01 "0.3979" 0.896885
+"198" "GO:1901292" "nucleoside phosphate catabolic process" 185 2 1.01 "0.4022" 0.896885
+"199" "GO:0065007" "biological regulation" 1825 11 9.92 "0.4045" 0.896885
+"200" "GO:0090304" "nucleic acid metabolic process" 1339 7 7.28 "0.4096" 0.896885
+"201" "GO:0006139" "nucleobase-containing compound metabolic..." 1850 10 10.06 "0.4106" 0.896885
+"202" "GO:0046434" "organophosphate catabolic process" 243 2 1.32 "0.4106" 0.896885
+"203" "GO:0010154" "fruit development" 239 3 1.3 "0.4107" 0.896885
+"205" "GO:0009314" "response to radiation" 254 3 1.38 "0.4134" 0.896885
+"206" "GO:0006184" "GTP catabolic process" 123 2 0.67 "0.4179" 0.896885
+"211" "GO:0009259" "ribonucleotide metabolic process" 302 2 1.64 "0.4268" 0.896885
+"212" "GO:0010467" "gene expression" 1249 6 6.79 "0.4292" 0.896885
+"214" "GO:0044765" "single-organism transport" 863 6 4.69 "0.4353" 0.896885
+"215" "GO:1901564" "organonitrogen compound metabolic proces..." 1543 8 8.39 "0.4373" 0.896885
+"216" "GO:0009658" "chloroplast organization" 67 2 0.36 "0.4378" 0.896885
+"219" "GO:1901136" "carbohydrate derivative catabolic proces..." 226 2 1.23 "0.4437" 0.896885
+"222" "GO:0010033" "response to organic substance" 491 4 2.67 "0.4472" 0.896885
+"224" "GO:0065003" "macromolecular complex assembly" 143 2 0.78 "0.4539" 0.896885
+"226" "GO:0044763" "single-organism cellular process" 3661 23 19.9 "0.4565" 0.896885
+"229" "GO:0009116" "nucleoside metabolic process" 324 2 1.76 "0.4630" 0.896885
+"230" "GO:0044270" "cellular nitrogen compound catabolic pro..." 252 2 1.37 "0.4637" 0.896885
+"231" "GO:0046700" "heterocycle catabolic process" 252 2 1.37 "0.4642" 0.896885
+"233" "GO:0006885" "regulation of pH" 18 2 0.1 "0.4708" 0.896885
+"234" "GO:0016053" "organic acid biosynthetic process" 364 2 1.98 "0.4755" 0.896885
+"235" "GO:0006807" "nitrogen compound metabolic process" 2865 15 15.57 "0.4775" 0.896885
+"236" "GO:0009143" "nucleoside triphosphate catabolic proces..." 185 2 1.01 "0.4793" 0.896885
+"238" "GO:0018394" "peptidyl-lysine acetylation" 21 2 0.11 "0.4828" 0.896885
+"239" "GO:0034645" "cellular macromolecule biosynthetic proc..." 1347 6 7.32 "0.4846" 0.896885
+"241" "GO:0009164" "nucleoside catabolic process" 188 2 1.02 "0.4872" 0.896885
+"244" "GO:0009203" "ribonucleoside triphosphate catabolic pr..." 185 2 1.01 "0.4903" 0.896885
+"245" "GO:0009207" "purine ribonucleoside triphosphate catab..." 185 2 1.01 "0.4903" 0.896885
+"246" "GO:0009146" "purine nucleoside triphosphate catabolic..." 185 2 1.01 "0.4903" 0.896885
+"249" "GO:0022607" "cellular component assembly" 184 2 1 "0.4916" 0.896885
+"250" "GO:0046394" "carboxylic acid biosynthetic process" 364 2 1.98 "0.4942" 0.896885
+"251" "GO:0070887" "cellular response to chemical stimulus" 289 2 1.57 "0.4963" 0.896885
+"252" "GO:0051179" "localization" 1219 7 6.63 "0.5020" 0.900751773049645
+"255" "GO:0048608" "reproductive structure development" 425 4 2.31 "0.5078" 0.904742253521127
+"257" "GO:1901135" "carbohydrate derivative metabolic proces..." 574 3 3.12 "0.5175" 0.907573825503356
+"261" "GO:0072523" "purine-containing compound catabolic pro..." 188 2 1.02 "0.5236" 0.907573825503356
+"262" "GO:0051649" "establishment of localization in cell" 288 2 1.57 "0.5247" 0.907573825503356
+"263" "GO:0009059" "macromolecule biosynthetic process" 1353 6 7.35 "0.5277" 0.907573825503356
+"264" "GO:0044262" "cellular carbohydrate metabolic process" 342 2 1.86 "0.5279" 0.907573825503356
+"265" "GO:0007018" "microtubule-based movement" 47 2 0.26 "0.5337" 0.907573825503356
+"266" "GO:0048731" "system development" 660 6 3.59 "0.5345" 0.907573825503356
+"268" "GO:0006461" "protein complex assembly" 130 2 0.71 "0.5383" 0.907932666666667
+"271" "GO:0044702" "single organism reproductive process" 447 3 2.43 "0.5523" 0.925376821192053
+"272" "GO:0051276" "chromosome organization" 134 2 0.73 "0.5584" 0.929442105263158
+"276" "GO:1901657" "glycosyl compound metabolic process" 359 2 1.95 "0.5783" 0.953021428571428
+"278" "GO:0006163" "purine nucleotide metabolic process" 300 2 1.63 "0.5801" 0.953021428571428
+"280" "GO:0051641" "cellular localization" 321 2 1.74 "0.5882" 0.957556962025316
+"281" "GO:0003006" "developmental process involved in reprod..." 478 4 2.6 "0.5935" 0.957556962025316
+"282" "GO:0006464" "cellular protein modification process" 989 3 5.38 "0.5954" 0.957556962025316
+"283" "GO:0044238" "primary metabolic process" 4582 23 24.91 "0.5980" 0.957556962025316
+"287" "GO:0006520" "cellular amino acid metabolic process" 852 4 4.63 "0.6131" 0.973895731707317
+"288" "GO:0030001" "metal ion transport" 183 2 0.99 "0.6262" 0.973895731707317
+"289" "GO:0044723" "single-organism carbohydrate metabolic p..." 531 3 2.89 "0.6288" 0.973895731707317
+"290" "GO:0006351" "transcription, DNA-templated" 680 3 3.7 "0.6292" 0.973895731707317
+"292" "GO:0050801" "ion homeostasis" 70 2 0.38 "0.6309" 0.973895731707317
+"293" "GO:0005975" "carbohydrate metabolic process" 674 3 3.66 "0.6313" 0.973895731707317
+"294" "GO:0061458" "reproductive system development" 425 4 2.31 "0.6352" 0.973973333333333
+"296" "GO:0050896" "response to stimulus" 2143 11 11.65 "0.6468" 0.984036842105263
+"297" "GO:0043933" "macromolecular complex subunit organizat..." 176 2 0.96 "0.6496" 0.984036842105263
+"299" "GO:0006812" "cation transport" 313 3 1.7 "0.6607" 0.984036842105263
+"300" "GO:0044283" "small molecule biosynthetic process" 444 2 2.41 "0.6629" 0.984036842105263
+"302" "GO:1901566" "organonitrogen compound biosynthetic pro..." 440 2 2.39 "0.6643" 0.984036842105263
+"303" "GO:0032774" "RNA biosynthetic process" 680 3 3.7 "0.6651" 0.984036842105263
+"307" "GO:0060255" "regulation of macromolecule metabolic pr..." 820 3 4.46 "0.6846" 0.987806010928962
+"308" "GO:0036211" "protein modification process" 989 3 5.38 "0.6854" 0.987806010928962
+"309" "GO:0034622" "cellular macromolecular complex assembly" 119 2 0.65 "0.6915" 0.987806010928962
+"310" "GO:0051252" "regulation of RNA metabolic process" 636 3 3.46 "0.6919" 0.987806010928962
+"311" "GO:0016569" "covalent chromatin modification" 55 2 0.3 "0.6923" 0.987806010928962
+"313" "GO:0019438" "aromatic compound biosynthetic process" 1004 5 5.46 "0.6983" 0.987806010928962
+"314" "GO:0009791" "post-embryonic development" 519 4 2.82 "0.7012" 0.987806010928962
+"316" "GO:0044271" "cellular nitrogen compound biosynthetic ..." 1013 5 5.51 "0.7018" 0.987806010928962
+"317" "GO:0018130" "heterocycle biosynthetic process" 1015 5 5.52 "0.7121" 0.987806010928962
+"318" "GO:1901605" "alpha-amino acid metabolic process" 783 4 4.26 "0.7129" 0.987806010928962
+"319" "GO:0055086" "nucleobase-containing small molecule met..." 560 3 3.04 "0.7143" 0.987806010928962
+"320" "GO:0048856" "anatomical structure development" 842 7 4.58 "0.7145" 0.987806010928962
+"323" "GO:0006473" "protein acetylation" 23 2 0.13 "0.7208" 0.989148387096774
+"324" "GO:0048367" "shoot system development" 276 2 1.5 "0.7247" 0.989148387096774
+"325" "GO:0051171" "regulation of nitrogen compound metaboli..." 713 3 3.88 "0.7272" 0.989148387096774
+"330" "GO:0019219" "regulation of nucleobase-containing comp..." 697 3 3.79 "0.7415" 1
+"333" "GO:0009058" "biosynthetic process" 2251 10 12.24 "0.7481" 1
+"337" "GO:0055080" "cation homeostasis" 61 2 0.33 "0.7578" 1
+"339" "GO:0042592" "homeostatic process" 161 2 0.88 "0.7619" 1
+"342" "GO:0006355" "regulation of transcription, DNA-templat..." 575 2 3.13 "0.7709" 1
+"343" "GO:0001101" "response to acid chemical" 360 2 1.96 "0.7759" 1
+"345" "GO:0009653" "anatomical structure morphogenesis" 308 2 1.67 "0.7789" 1
+"346" "GO:0007275" "multicellular organismal development" 871 7 4.73 "0.7823" 1
+"348" "GO:0044249" "cellular biosynthetic process" 2044 9 11.11 "0.7884" 1
+"349" "GO:1901576" "organic substance biosynthetic process" 2157 9 11.72 "0.7895" 1
+"351" "GO:0019637" "organophosphate metabolic process" 604 2 3.28 "0.7919" 1
+"352" "GO:0044281" "small molecule metabolic process" 1828 10 9.94 "0.7919" 1
+"353" "GO:0051716" "cellular response to stimulus" 917 4 4.98 "0.7925" 1
+"354" "GO:0009094" "L-phenylalanine biosynthetic process" 55 2 0.3 "0.7938" 1
+"355" "GO:1901362" "organic cyclic compound biosynthetic pro..." 1098 5 5.97 "0.7980" 1
+"356" "GO:0007165" "signal transduction" 593 2 3.22 "0.8009" 1
+"360" "GO:0080090" "regulation of primary metabolic process" 829 3 4.51 "0.8098" 1
+"365" "GO:0006475" "internal protein amino acid acetylation" 21 2 0.11 "0.8300" 1
+"368" "GO:0050789" "regulation of biological process" 1683 7 9.15 "0.8406" 1
+"369" "GO:0042278" "purine nucleoside metabolic process" 300 2 1.63 "0.8423" 1
+"370" "GO:0006082" "organic acid metabolic process" 1192 5 6.48 "0.8426" 1
+"371" "GO:0043170" "macromolecule metabolic process" 3351 14 18.21 "0.8460" 1
+"372" "GO:0009889" "regulation of biosynthetic process" 681 2 3.7 "0.8461" 1
+"373" "GO:0071704" "organic substance metabolic process" 4889 23 26.57 "0.8469" 1
+"374" "GO:0023052" "signaling" 604 2 3.28 "0.8516" 1
+"375" "GO:0031323" "regulation of cellular metabolic process" 859 3 4.67 "0.8558" 1
+"378" "GO:0071822" "protein complex subunit organization" 163 2 0.89 "0.8573" 1
+"380" "GO:0031326" "regulation of cellular biosynthetic proc..." 677 2 3.68 "0.8627" 1
+"381" "GO:0008152" "metabolic process" 5790 29 31.47 "0.8638" 1
+"384" "GO:0034654" "nucleobase-containing compound biosynthe..." 799 3 4.34 "0.8786" 1
+"385" "GO:0043412" "macromolecule modification" 1088 3 5.91 "0.8825" 1
+"387" "GO:1901700" "response to oxygen-containing compound" 437 2 2.38 "0.8839" 1
+"388" "GO:2000112" "regulation of cellular macromolecule bio..." 669 2 3.64 "0.8852" 1
+"390" "GO:0048513" "organ development" 370 2 2.01 "0.8882" 1
+"392" "GO:0019222" "regulation of metabolic process" 964 3 5.24 "0.8898" 1
+"393" "GO:0051234" "establishment of localization" 1199 7 6.52 "0.8904" 1
+"394" "GO:0010556" "regulation of macromolecule biosynthetic..." 669 2 3.64 "0.8922" 1
+"395" "GO:0009725" "response to hormone" 418 3 2.27 "0.8929" 1
+"399" "GO:0009150" "purine ribonucleotide metabolic process" 293 2 1.59 "0.8990" 1
+"400" "GO:0044237" "cellular metabolic process" 4604 24 25.03 "0.9033" 1
+"401" "GO:0009119" "ribonucleoside metabolic process" 308 2 1.67 "0.9035" 1
+"402" "GO:2001141" "regulation of RNA biosynthetic process" 575 2 3.13 "0.9086" 1
+"403" "GO:0044700" "single organism signaling" 597 2 3.24 "0.9091" 1
+"404" "GO:0006576" "cellular biogenic amine metabolic proces..." 130 2 0.71 "0.9134" 1
+"405" "GO:0019752" "carboxylic acid metabolic process" 1171 5 6.36 "0.9187" 1
+"407" "GO:0050794" "regulation of cellular process" 1500 6 8.15 "0.9274" 1
+"408" "GO:0009416" "response to light stimulus" 248 3 1.35 "0.9305" 1
+"411" "GO:0044267" "cellular protein metabolic process" 1480 4 8.04 "0.9344" 1
+"412" "GO:0019538" "protein metabolic process" 1820 6 9.89 "0.9392" 1
+"413" "GO:0046128" "purine ribonucleoside metabolic process" 299 2 1.63 "0.9423" 1
+"414" "GO:0007154" "cell communication" 672 2 3.65 "0.9424" 1
+"416" "GO:0044711" "single-organism biosynthetic process" 989 3 5.38 "0.9446" 1
+"419" "GO:0044085" "cellular component biogenesis" 452 2 2.46 "0.9592" 1
+"421" "GO:0010468" "regulation of gene expression" 725 2 3.94 "0.9645" 1
+"422" "GO:0006796" "phosphate-containing compound metabolic ..." 1354 3 7.36 "0.9675" 1
+"424" "GO:0009199" "ribonucleoside triphosphate metabolic pr..." 264 2 1.43 "0.9776" 1
+"425" "GO:0009144" "purine nucleoside triphosphate metabolic..." 264 2 1.43 "0.9776" 1
+"427" "GO:0044260" "cellular macromolecule metabolic process" 3082 12 16.75 "0.9794" 1
+"430" "GO:0006793" "phosphorus metabolic process" 1369 3 7.44 "0.9875" 1
+"431" "GO:0009117" "nucleotide metabolic process" 462 2 2.51 "0.9914" 1
+"432" "GO:0006950" "response to stress" 1093 2 5.94 "0.9952" 1
+"433" "GO:0043436" "oxoacid metabolic process" 1191 5 6.47 "0.9958" 1
+"434" "GO:0006810" "transport" 1186 6 6.45 "0.9978" 1
+"435" "GO:0018393" "internal peptidyl-lysine acetylation" 21 2 0.11 "1.0000" 1
+"436" "GO:0009095" "aromatic amino acid family biosynthetic ..." 55 2 0.3 "1.0000" 1
+"437" "GO:0008150" "biological_process" 7543 41 41 "1.0000" 1
+"438" "GO:0009205" "purine ribonucleoside triphosphate metab..." 264 2 1.43 "1.0000" 1

@@ -1,0 +1,66 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"1" "GO:0015298" "solute:cation antiporter activity" 23 2 0.08 "0.0051" 0.3315
+"2" "GO:0003924" "GTPase activity" 91 2 0.33 "0.0290" 0.4238
+"4" "GO:0032561" "guanyl ribonucleotide binding" 148 2 0.54 "0.0323" 0.4238
+"5" "GO:0005525" "GTP binding" 148 2 0.54 "0.0323" 0.4238
+"6" "GO:0019001" "guanyl nucleotide binding" 149 2 0.55 "0.0326" 0.4238
+"9" "GO:0016746" "transferase activity, transferring acyl ..." 188 2 0.69 "0.0420" 0.455
+"13" "GO:0005515" "protein binding" 2405 12 8.83 "0.0906" 0.802388888888889
+"18" "GO:0016410" "N-acyltransferase activity" 50 2 0.18 "0.1096" 0.802388888888889
+"19" "GO:0015299" "solute:proton antiporter activity" 22 2 0.08 "0.1111" 0.802388888888889
+"23" "GO:0016407" "acetyltransferase activity" 54 2 0.2 "0.1281" 0.83265
+"32" "GO:0015297" "antiporter activity" 69 2 0.25 "0.1844" 1
+"34" "GO:0005198" "structural molecule activity" 225 2 0.83 "0.1995" 1
+"35" "GO:0009055" "electron carrier activity" 229 2 0.84 "0.2049" 1
+"38" "GO:0034212" "peptide N-acetyltransferase activity" 23 2 0.08 "0.2444" 1
+"40" "GO:0016829" "lyase activity" 248 2 0.91 "0.2549" 1
+"43" "GO:0048037" "cofactor binding" 291 2 1.07 "0.2700" 1
+"45" "GO:0015291" "secondary active transmembrane transport..." 160 2 0.59 "0.2855" 1
+"53" "GO:0043169" "cation binding" 1586 6 5.82 "0.3217" 1
+"56" "GO:0008233" "peptidase activity" 321 2 1.18 "0.3359" 1
+"57" "GO:0015078" "hydrogen ion transmembrane transporter a..." 64 2 0.23 "0.3363" 1
+"65" "GO:0015077" "monovalent inorganic cation transmembran..." 110 2 0.4 "0.3680" 1
+"67" "GO:0003824" "catalytic activity" 5339 21 19.59 "0.3795" 1
+"68" "GO:0016491" "oxidoreductase activity" 1038 5 3.81 "0.3884" 1
+"74" "GO:0022857" "transmembrane transporter activity" 538 3 1.97 "0.4457" 1
+"75" "GO:0022890" "inorganic cation transmembrane transport..." 181 2 0.66 "0.4519" 1
+"76" "GO:0022891" "substrate-specific transmembrane transpo..." 468 3 1.72 "0.4531" 1
+"77" "GO:0022892" "substrate-specific transporter activity" 541 3 1.99 "0.4532" 1
+"82" "GO:0005215" "transporter activity" 704 3 2.58 "0.4835" 1
+"92" "GO:0022804" "active transmembrane transporter activit..." 299 2 1.1 "0.5835" 1
+"93" "GO:0015075" "ion transmembrane transporter activity" 393 3 1.44 "0.5914" 1
+"97" "GO:0008080" "N-acetyltransferase activity" 46 2 0.17 "0.6261" 1
+"98" "GO:0016747" "transferase activity, transferring acyl ..." 150 2 0.55 "0.6357" 1
+"102" "GO:0016817" "hydrolase activity, acting on acid anhyd..." 560 2 2.06 "0.6588" 1
+"104" "GO:0016788" "hydrolase activity, acting on ester bond..." 565 2 2.07 "0.6644" 1
+"105" "GO:0016787" "hydrolase activity" 1903 7 6.98 "0.6665" 1
+"106" "GO:0046872" "metal ion binding" 1483 6 5.44 "0.6679" 1
+"107" "GO:0046914" "transition metal ion binding" 980 4 3.6 "0.6690" 1
+"109" "GO:1901265" "nucleoside phosphate binding" 1995 6 7.32 "0.6993" 1
+"110" "GO:0005488" "binding" 6590 23 24.18 "0.7432" 1
+"111" "GO:1901363" "heterocyclic compound binding" 3457 11 12.69 "0.7439" 1
+"112" "GO:0097159" "organic cyclic compound binding" 3461 11 12.7 "0.7458" 1
+"113" "GO:0061733" "peptide-lysine-N-acetyltransferase activ..." 20 2 0.07 "0.7510" 1
+"114" "GO:0008270" "zinc ion binding" 743 3 2.73 "0.7522" 1
+"115" "GO:0008324" "cation transmembrane transporter activit..." 269 2 0.99 "0.7648" 1
+"116" "GO:0036094" "small molecule binding" 2045 6 7.5 "0.7656" 1
+"120" "GO:0070011" "peptidase activity, acting on L-amino ac..." 284 2 1.04 "0.7824" 1
+"121" "GO:0043167" "ion binding" 2978 9 10.93 "0.7855" 1
+"124" "GO:0043168" "anion binding" 1614 4 5.92 "0.8218" 1
+"125" "GO:0035639" "purine ribonucleoside triphosphate bindi..." 1309 3 4.8 "0.8335" 1
+"126" "GO:0003676" "nucleic acid binding" 1628 4 5.97 "0.8443" 1
+"128" "GO:0000166" "nucleotide binding" 1995 6 7.32 "0.8618" 1
+"130" "GO:0001882" "nucleoside binding" 1374 3 5.04 "0.8708" 1
+"131" "GO:0097367" "carbohydrate derivative binding" 1404 3 5.15 "0.8962" 1
+"132" "GO:0004402" "histone acetyltransferase activity" 19 2 0.07 "0.9000" 1
+"134" "GO:0017076" "purine nucleotide binding" 1374 3 5.04 "0.9205" 1
+"135" "GO:0032553" "ribonucleotide binding" 1390 3 5.1 "0.9235" 1
+"136" "GO:0017111" "nucleoside-triphosphatase activity" 532 2 1.95 "0.9390" 1
+"139" "GO:0032555" "purine ribonucleotide binding" 1370 3 5.03 "0.9492" 1
+"141" "GO:0016818" "hydrolase activity, acting on acid anhyd..." 552 2 2.03 "0.9716" 1
+"142" "GO:0016740" "transferase activity" 2111 4 7.75 "0.9879" 1
+"143" "GO:0016462" "pyrophosphatase activity" 549 2 2.01 "0.9892" 1
+"144" "GO:0001883" "purine nucleoside binding" 1370 3 5.03 "0.9913" 1
+"145" "GO:0032550" "purine ribonucleoside binding" 1370 3 5.03 "0.9935" 1
+"147" "GO:0032549" "ribonucleoside binding" 1373 3 5.04 "0.9978" 1
+"153" "GO:0003674" "molecular_function" 9265 34 34 "1.0000" 1

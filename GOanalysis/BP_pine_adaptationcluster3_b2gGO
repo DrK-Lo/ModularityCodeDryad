@@ -1,0 +1,32 @@
+"GO.ID" "Term" "Annotated" "Significant" "Expected" "parentchildFisher" "fdr"
+"17" "GO:0055114" "oxidation-reduction process" 881 2 0.82 "0.090" 0.607083333333333
+"18" "GO:0009628" "response to abiotic stimulus" 669 3 0.62 "0.096" 0.607083333333333
+"19" "GO:0050896" "response to stimulus" 2114 4 1.97 "0.103" 0.607083333333333
+"23" "GO:0090304" "nucleic acid metabolic process" 1304 2 1.21 "0.137" 0.607083333333333
+"25" "GO:0006139" "nucleobase-containing compound metabolic..." 1717 2 1.6 "0.148" 0.607083333333333
+"30" "GO:0050794" "regulation of cellular process" 1464 3 1.36 "0.180" 0.607083333333333
+"32" "GO:0050789" "regulation of biological process" 1642 3 1.53 "0.181" 0.607083333333333
+"37" "GO:0032501" "multicellular organismal process" 899 2 0.84 "0.200" 0.607083333333333
+"39" "GO:1901360" "organic cyclic compound metabolic proces..." 2156 2 2.01 "0.217" 0.607083333333333
+"40" "GO:0065007" "biological regulation" 1787 3 1.66 "0.219" 0.607083333333333
+"43" "GO:0032502" "developmental process" 973 2 0.91 "0.227" 0.607083333333333
+"45" "GO:0044707" "single-multicellular organism process" 862 2 0.8 "0.235" 0.607083333333333
+"49" "GO:0044767" "single-organism developmental process" 952 2 0.89 "0.273" 0.651
+"53" "GO:0009314" "response to radiation" 254 2 0.24 "0.323" 0.715214285714286
+"65" "GO:0006725" "cellular aromatic compound metabolic pro..." 2023 2 1.88 "0.450" 0.783611111111111
+"66" "GO:0009987" "cellular process" 5653 6 5.27 "0.450" 0.783611111111111
+"68" "GO:0046483" "heterocycle metabolic process" 2032 2 1.89 "0.453" 0.783611111111111
+"69" "GO:0044699" "single-organism process" 4629 5 4.31 "0.455" 0.783611111111111
+"71" "GO:0043170" "macromolecule metabolic process" 3211 2 2.99 "0.482" 0.786421052631579
+"74" "GO:0034641" "cellular nitrogen compound metabolic pro..." 2285 2 2.13 "0.537" 0.83235
+"100" "GO:0044260" "cellular macromolecule metabolic process" 2946 2 2.74 "0.712" 1
+"104" "GO:0006807" "nitrogen compound metabolic process" 2943 2 2.74 "0.732" 1
+"105" "GO:0007275" "multicellular organism development" 831 2 0.77 "0.745" 1
+"108" "GO:0044710" "single-organism metabolic process" 2932 2 2.73 "0.814" 1
+"114" "GO:0008152" "metabolic process" 5547 4 5.17 "0.918" 1
+"115" "GO:0044237" "cellular metabolic process" 4333 3 4.04 "0.942" 1
+"117" "GO:0009416" "response to light stimulus" 248 2 0.23 "0.953" 1
+"118" "GO:0044238" "primary metabolic process" 4297 2 4 "0.962" 1
+"119" "GO:0044763" "single-organism cellular process" 3560 2 3.32 "0.966" 1
+"122" "GO:0071704" "organic substance metabolic process" 4625 2 4.31 "0.984" 1
+"125" "GO:0008150" "biological_process" 7515 7 7 "1.000" 1
