@@ -21,4 +21,7 @@ simulations/data/LW2015samplingdesigns/SampleLandscapesOutputFreqs.R
 simulations/data/LW2015samplingdesigns/SampleLandscapesOutputFreqsold.Rdata
 results/*
 large_files/*
+<<<<<<< HEAD
 simulations/data/*
+=======
+>>>>>>> 7c3d8f074f942a834aa4d12e6b5c236f81aee88e
