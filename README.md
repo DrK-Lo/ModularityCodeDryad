@@ -69,7 +69,7 @@ Other scripts:
 
 ### Steps to run analyses of simulations:
 
-* Change directory to the /simulations folder.
+* Change directory to the /simulations folder. Download the `/data` folder from the Dryad repository
 
 * Galaxy_Plots_on_AdaptreeEnvi_1R_aOverlayEnvi.Rmd 
 	* runs the code to overlay the Adaptree 
