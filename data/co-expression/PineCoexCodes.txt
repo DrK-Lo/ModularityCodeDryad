@@ -1,0 +1,8 @@
+P1	black
+P2	blue
+P3	brown
+P4	green
+P5	grey
+P6	red
+P7	turquoise
+P8	yellow
